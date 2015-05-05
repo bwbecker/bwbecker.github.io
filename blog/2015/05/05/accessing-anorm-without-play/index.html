@@ -110,9 +110,9 @@ then use with Anorm.</li>
 
 <p>The <code>DB</code> class provides three methods:  two that get a connection and one that mimics
 <a href="https://www.playframework.com/documentation/2.3.x/api/scala/index.html#play.api.db.DB$"><code>withConnection</code></a>.
-<code>withConnection</code> is the one I use the most (by far).</p>
+<code>withConnection</code> is the one I use the most (by far) because it handles closing the connection.</p>
 
-<p>It assumes the postgres driver is available in the class path and uses <code>PgService</code> (see below) to
+<p><code>DB</code> assumes the postgres driver is available in the class path and uses <code>PgService</code> (see below) to
 get the connection data.</p>
 
 <p>Typical usage is as follows:</p>

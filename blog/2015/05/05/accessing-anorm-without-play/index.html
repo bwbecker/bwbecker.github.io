@@ -131,7 +131,7 @@ get the connection data.</p>
 </span><span class='line'>
 </span><span class='line'>        <span class="k">val</span> <span class="n">sql</span> <span class="k">=</span> <span class="nc">SQL</span><span class="s">&quot;&quot;&quot;insert into _oat.test_enum (note_category, sort_order) </span>
 </span><span class='line'><span class="s">                VALUES  (${NoteCategory.Advisor}, ${SortOrder.Ascending}) RETURNING id&quot;&quot;&quot;</span>
-</span><span class='line'>        <span class="k">val</span> <span class="n">id</span> <span class="k">=</span> <span class="n">sql_1</span><span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="n">anorm</span><span class="o">.</span><span class="nc">SqlParser</span><span class="o">.</span><span class="n">scalar</span><span class="o">[</span><span class="kt">Long</span><span class="o">].</span><span class="n">singleOpt</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">id</span> <span class="k">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="n">anorm</span><span class="o">.</span><span class="nc">SqlParser</span><span class="o">.</span><span class="n">scalar</span><span class="o">[</span><span class="kt">Long</span><span class="o">].</span><span class="n">singleOpt</span><span class="o">)</span>
 </span><span class='line'>    <span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 

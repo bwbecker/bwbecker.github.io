@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://bwbecker.github.io/atom.xml" rel="self"/>
   <link href="http://bwbecker.github.io/"/>
-  <updated>2015-05-05T08:03:59-04:00</updated>
+  <updated>2015-05-05T08:15:46-04:00</updated>
   <id>http://bwbecker.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,5 +12,16 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hard-Won Introduction]]></title>
+    <link href="http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction/"/>
+    <updated>2015-05-05T08:14:41-04:00</updated>
+    <id>http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m doing a lot of development in Scala + Play these days.  I often come up against a problem with a &ldquo;hard won&rdquo; solution.  It might be a fundamental misunderstanding on my part, something I just haven&rsquo;t run into before, or where Googling isn&rsquo;t as helpful as it often is.  Regardless, the solution came at some pain to myself.  To help make that hard won solution less painful, I&rsquo;m posting here to remind me and to help others.</p>
+
+<p>I hope you find it useful.</p>
+]]></content>
+  </entry>
   
 </feed>

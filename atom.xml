@@ -4,7 +4,7 @@
   <title><![CDATA[Hard-Won Scala + Play]]></title>
   <link href="http://bwbecker.github.io/atom.xml" rel="self"/>
   <link href="http://bwbecker.github.io/"/>
-  <updated>2015-05-05T11:17:55-04:00</updated>
+  <updated>2015-05-05T11:19:35-04:00</updated>
   <id>http://bwbecker.github.io/</id>
   <author>
     <name><![CDATA[Byron Weber Becker]]></name>
@@ -39,8 +39,8 @@ then use with Anorm.</li>
 
 <h2>DB class</h2>
 
-<p>The <code>DB</code> class provides three methods:  two that get a connection and one that mimics
-<a href="https://www.playframework.com/documentation/2.3.x/api/scala/index.html#play.api.db.DB$"><code>withConnection</code></a>.
+<p>The <code>DB</code> class provides three methods:  two that get a connection and one that mimics <code>withConnection</code>
+(<a href="https://www.playframework.com/documentation/2.3.x/api/scala/index.html#play.api.db.DB$">scaladoc</a>).
 <code>withConnection</code> is the one I use the most (by far) because it handles closing the connection.</p>
 
 <p><code>DB</code> assumes the postgres driver is available in the class path and uses <code>PgService</code> (see below) to

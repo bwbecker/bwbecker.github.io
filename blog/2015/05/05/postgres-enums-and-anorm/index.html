@@ -1,24 +1,91 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Hard-Won Scala + Play]]></title>
-  <link href="http://bwbecker.github.io/atom.xml" rel="self"/>
-  <link href="http://bwbecker.github.io/"/>
-  <updated>2015-05-05T10:02:54-04:00</updated>
-  <id>http://bwbecker.github.io/</id>
-  <author>
-    <name><![CDATA[Byron Weber Becker]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Postgres Enums and Anorm - Hard-Won Scala + Play</title>
+  <meta name="author" content="Byron Weber Becker">
 
   
-  <entry>
-    <title type="html"><![CDATA[Postgres Enums and Anorm]]></title>
-    <link href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/"/>
-    <updated>2015-05-05T08:24:47-04:00</updated>
-    <id>http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm</id>
-    <content type="html"><![CDATA[<p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
+  <meta name="description" content="Types are a wonderful thing in programming languages. It&rsquo;s the main reason
+I&rsquo;m using Scala. Having the compiler do a proof that at least &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Hard-Won Scala + Play" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Hard-Won Scala + Play</a></h1>
+  
+    <h2>Lessons in web development using Scala and the Play! framework</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="bwbecker.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Postgres Enums and Anorm</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T08:24:47-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:24 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
 I&rsquo;m using Scala.  Having the compiler do a proof that at least part of my
 program is correct is a huge advantage over a dynamically typed language.</p>
 
@@ -345,18 +412,130 @@ write that up soon.</p>
 
 
 <p>That&rsquo;s it!  Enjoy!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hard-Won Introduction]]></title>
-    <link href="http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction/"/>
-    <updated>2015-05-05T08:14:41-04:00</updated>
-    <id>http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m doing a lot of development in Scala + Play these days.  I often come up against a problem with a &ldquo;hard won&rdquo; solution.  It might be a fundamental misunderstanding on my part, something I just haven&rsquo;t run into before, or where Googling isn&rsquo;t as helpful as it often is.  Regardless, the solution came at some pain to myself.  To help make that hard won solution less painful, I&rsquo;m posting here to remind me and to help others.</p>
+</div>
 
-<p>I hope you find it useful.</p>
-]]></content>
-  </entry>
+
+  <footer>
+    <p class="meta">
+      
   
-</feed>
+
+<span class="byline author vcard">Posted by <span class="fn">Byron Weber Becker</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T08:24:47-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:24 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/" data-via="" data-counturl="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/05/hard-won-introduction/" title="Previous Post: Hard-Won Introduction">&laquo; Hard-Won Introduction</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/hard-won-introduction/">Hard-Won Introduction</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/bwbecker">@bwbecker</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'bwbecker',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Byron Weber Becker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -9,7 +9,8 @@
   <meta name="author" content="Byron Weber Becker">
 
   
-  <meta name="description" content="I&rsquo;m doing a lot of development in Scala + Play these days. I often come up against a problem with a &ldquo;hard won&rdquo; solution. It might &hellip;">
+  <meta name="description" content="Types are a wonderful thing in programming languages. It&rsquo;s the main reason
+I&rsquo;m using Scala. Having the compiler do a proof that at least &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +72,53 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T08:24:47-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:24 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
+I&rsquo;m using Scala.  Having the compiler do a proof that at least part of my
+program is correct is a huge advantage over a dynamically typed language.</p>
+
+<p>Databases can also make use of types &ndash; with similar advantages.  In my current
+project we&rsquo;ve been
+receiving data from a database that does not use types or other constraints
+that are the hallmark of modern database design. What a mess!  Tables with
+invalid values, or columns that are never null but nulls are nevertheless allowed,
+or a column that allows nulls but represents them as either the empty string or a
+string with one space in it rather than good &lsquo;ole <code>null</code>.</p>
+
+<p>This blog post considers how to marry enumerations in a Postgres database
+with a Scala program via the Anorm database access library.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/05/postgres-enums-and-anorm/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/05/05/hard-won-introduction/">Hard-Won Introduction</a></h1>
     
     
@@ -108,6 +156,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/05/05/hard-won-introduction/">Hard-Won Introduction</a>

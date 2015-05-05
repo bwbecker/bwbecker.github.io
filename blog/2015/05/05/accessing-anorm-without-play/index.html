@@ -1,24 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Hard-Won Scala + Play]]></title>
-  <link href="http://bwbecker.github.io/atom.xml" rel="self"/>
-  <link href="http://bwbecker.github.io/"/>
-  <updated>2015-05-05T11:04:35-04:00</updated>
-  <id>http://bwbecker.github.io/</id>
-  <author>
-    <name><![CDATA[Byron Weber Becker]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Accessing Anorm Without Play - Hard-Won Scala + Play</title>
+  <meta name="author" content="Byron Weber Becker">
 
   
-  <entry>
-    <title type="html"><![CDATA[Accessing Anorm Without Play]]></title>
-    <link href="http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/"/>
-    <updated>2015-05-05T10:40:25-04:00</updated>
-    <id>http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play</id>
-    <content type="html"><![CDATA[<p>Ever want to use Anorm to access a database without all the overhead of Play?<br/>
+  <meta name="description" content="Ever want to use Anorm to access a database without all the overhead of Play?
+I did in my
+previous post
+where I played with Postgres enumerations. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Hard-Won Scala + Play" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Hard-Won Scala + Play</a></h1>
+  
+    <h2>Lessons in web development using Scala and the Play! framework</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="bwbecker.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Accessing Anorm Without Play</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T10:40:25-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Ever want to use Anorm to access a database without all the overhead of Play?<br/>
 I did in my
 <a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">previous post</a>
 where I played with Postgres enumerations.  Here&rsquo;s the code I used.</p>
@@ -357,353 +426,134 @@ that algorithm, but I believe this comes pretty close.</p>
 
 
 <p>That&rsquo;s it!  Enjoy!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Postgres Enums and Anorm]]></title>
-    <link href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/"/>
-    <updated>2015-05-05T08:24:47-04:00</updated>
-    <id>http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm</id>
-    <content type="html"><![CDATA[<p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
-I&rsquo;m using Scala.  Having the compiler do a proof that at least part of my
-program is correct is a huge advantage over a dynamically typed language.</p>
-
-<p>Databases can also make use of types &ndash; with similar advantages.  In my current
-project we&rsquo;ve been
-receiving data from a database that does not use types or other constraints
-that are the hallmark of modern database design. What a mess!  Tables with
-invalid values, or columns that are never null but nulls are nevertheless allowed,
-or a column that allows nulls but represents them as either the empty string or a
-string with one space in it rather than good &lsquo;ole <code>null</code>.</p>
-
-<p>This blog post considers how to marry enumerations in a Postgres database
-with a Scala program via the Anorm database access library.</p>
-
-<!-- More -->
-
-
-<h2>Defining Enumerations</h2>
-
-<p>Let&rsquo;s start with defining enumerations.  The following SQL does it in
-Postgres:</p>
-
-<div class="aside">
-    <b>Aside:</b> You&#8217;ll note a couple of oddities in the SQL.  They&#8217;re vestiages of
-    the project I&#8217;m working on.  <code>_oat</code> is the database schema I use most frequently.  
-    <code>std_note_category</code> and <code>oat_sort_order</code> are actual enums from my current project.
 </div>
 
 
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">_oat</span><span class="p">.</span><span class="n">std_note_category</span> <span class="k">AS</span> <span class="n">ENUM</span>
-</span><span class='line'>   <span class="p">(</span><span class="s1">&#39;Auto&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;Advisor&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;CourseEntry&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">_oat</span><span class="p">.</span><span class="n">oat_sort_order</span> <span class="k">AS</span> <span class="n">ENUM</span>
-</span><span class='line'>   <span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;DESC&#39;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We can create a quick test table with</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">_oat</span><span class="p">.</span><span class="n">test_enum</span> <span class="p">(</span>
-</span><span class='line'>    <span class="n">id</span>               <span class="nb">SERIAL</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">note_category</span>     <span class="n">_oat</span><span class="p">.</span><span class="n">std_note_category</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">sort_order</span>        <span class="n">_oat</span><span class="p">.</span><span class="n">oat_sort_order</span>
-</span><span class='line'><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that one of columns is nullable, the other is not.</p>
-
-<p>The database enumeration is mirrored by two Scala enumerations.  The first
-one uses names that match the values in the database.  The second one
-uses more descriptive names.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">NoteCategory</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">NoteCategory</span> <span class="o">=</span> <span class="nc">Value</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">val</span> <span class="nc">Auto</span><span class="o">,</span> <span class="nc">Advisor</span><span class="o">,</span> <span class="nc">CourseEntry</span> <span class="k">=</span> <span class="nc">Value</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">object</span> <span class="nc">SortOrder</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">SortOrder</span> <span class="o">=</span> <span class="nc">Value</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">val</span> <span class="nc">Ascending</span> <span class="k">=</span> <span class="nc">Value</span><span class="o">(</span><span class="s">&quot;ASC&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="k">val</span> <span class="nc">Descending</span> <span class="k">=</span> <span class="nc">Value</span><span class="o">(</span><span class="s">&quot;DESC&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>First Attempt:  casting in the queries</h2>
-
-<p>We can covert back and forth between the Scala enumerations and the
-database enumerations, but it&rsquo;s painful.  Works like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">db</span><span class="o">.</span><span class="n">withConnection</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">conn</span> <span class="k">=&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Delete everything from the table</span>
-</span><span class='line'>    <span class="nc">SQL</span><span class="s">&quot;&quot;&quot;truncate _oat.test_enum&quot;&quot;&quot;</span><span class="o">.</span><span class="n">execute</span><span class="o">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Insert one of each</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">sql</span> <span class="k">=</span> <span class="nc">SQL</span><span class="s">&quot;&quot;&quot;insert into _oat.test_enum </span>
-</span><span class='line'><span class="s">            (note_category, sort_order) VALUES  </span>
-</span><span class='line'><span class="s">                (${NoteCategory.Advisor.toString}::_oat.std_note_category,</span>
-</span><span class='line'><span class="s">                 ${SortOrder.Ascending.toString}::_oat.oat_sort_order</span>
-</span><span class='line'><span class="s">                ) RETURNING id&quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">id</span> <span class="k">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="n">anorm</span><span class="o">.</span><span class="nc">SqlParser</span><span class="o">.</span><span class="n">scalar</span><span class="o">[</span><span class="kt">Long</span><span class="o">].</span><span class="n">singleOpt</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Read them back and verify</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">r</span> <span class="k">=</span> <span class="nc">SQL</span><span class="s">&quot;&quot;&quot;select * </span>
-</span><span class='line'><span class="s">                    from _oat.test_enum </span>
-</span><span class='line'><span class="s">                    where id = ${id}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">apply</span><span class="o">().</span><span class="n">head</span>
-</span><span class='line'>    <span class="k">val</span> <span class="o">(</span><span class="n">nc</span><span class="o">,</span> <span class="n">so</span><span class="o">)</span> <span class="k">=</span> <span class="o">(</span><span class="n">r</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;note_category&quot;</span><span class="o">),</span>
-</span><span class='line'>                    <span class="n">r</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]](</span><span class="s">&quot;sort_order&quot;</span><span class="o">))</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="nc">NoteCategory</span><span class="o">.</span><span class="n">withName</span><span class="o">(</span><span class="n">nc</span><span class="o">)</span> <span class="o">==</span> <span class="nc">NoteCategory</span><span class="o">.</span><span class="nc">Advisor</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="nc">SortOrder</span><span class="o">.</span><span class="n">withName</span><span class="o">(</span><span class="n">so</span><span class="o">.</span><span class="n">get</span><span class="o">)</span> <span class="o">==</span> <span class="nc">SortOrder</span><span class="o">.</span><span class="nc">Ascending</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The objections to this code include:</p>
-
-<ol>
-<li>The call to <code>toString</code> in lines 9 and 10.</li>
-<li>The explicit casts required in those same lines.</li>
-<li>Reading the values back again as strings in line 18 and 19.</li>
-<li>Explicitly converting the strings to enums in lines 20 and 21.</li>
-</ol>
-
-
-<p>Obviously, we want to do better.</p>
-
-<p>But before we dive into improving, a couple of things to note:</p>
-
-<ul>
-<li><code>withName</code> (lines 20, 21) converts a string like &ldquo;Auto&rdquo; into the corresponding enumeration value.</li>
-<li>In line 19 we use <code>Option[String]</code> because the column is nullable.</li>
-</ul>
-
-
-<h2>Second Attempt:  Using ToStatement and a Column converter</h2>
-
-<p>Anorm uses implicit functions to assist in converting to and from SQL
-statements.  We&rsquo;ll start with the <code>ToStatement</code>, which allows us to embed
-Scala enumerations in queries easily.  We need a couple of functions in
-each Scala enumeration we write, so put <code>createEnumToStatement</code> in a new superclass
-and then change the enumerations to extend that class:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">DbEnum</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">protected</span> <span class="k">def</span> <span class="n">createEnumToStatement</span><span class="o">[</span><span class="kt">E</span><span class="o">]()</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ToStatement</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">def</span> <span class="n">set</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">java.sql.PreparedStatement</span><span class="o">,</span> <span class="n">index</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">aValue</span><span class="k">:</span> <span class="kt">E</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">s</span><span class="o">.</span><span class="n">setObject</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="n">aValue</span><span class="o">.</span><span class="n">toString</span><span class="o">,</span> <span class="n">java</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="nc">Types</span><span class="o">.</span><span class="nc">OTHER</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">object</span> <span class="nc">NoteCategory</span> <span class="k">extends</span> <span class="nc">DbEnum</span> <span class="o">{</span>   <span class="c1">// Extend DbEnum instead of Enumeration</span>
-</span><span class='line'>    <span class="o">...</span>        <span class="c1">// same as before</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">implicit</span> <span class="k">val</span> <span class="n">noteCategoryToStatement</span> <span class="k">=</span> <span class="n">createEnumToStatement</span><span class="o">[</span><span class="kt">NoteCategory</span><span class="o">]()</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Line 12 is the important one.  When you <code>import NoteCategory._</code> to bring the enum values into
-scope, this implicit is also brought into scope and used in the SQL statement to interpolate
-a <code>NoteCategory</code> value into the SQL.  The function&rsquo;s name
-doesn&rsquo;t matter.  You&rsquo;ll need a similar line for the other enum, of course.</p>
-
-<p>Line 12 is what allows us to drop the casts and the explicit calls to <code>toString</code> in the
-insertion SQL, above.  Replace it with the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">sql</span> <span class="k">=</span> <span class="nc">SQL</span><span class="s">&quot;&quot;&quot;insert into _oat.test_enum (note_category, sort_order) </span>
-</span><span class='line'><span class="s">        VALUES  (${NoteCategory.Advisor}, ${SortOrder.Ascending}) RETURNING id&quot;&quot;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>createEnumToStatement</code> creates a new object that sets the appropriate value in a JDBC
-prepared statement.  If you look at the JavaDoc for <code>java.sql.PreparedStatement</code> you&rsquo;ll see
-many <code>set</code> statements:  <code>setInt</code>, <code>setBoolean</code>, <code>setTime</code>, etc.  Unfortunately, <code>setEnum</code> is
-not one of them.</p>
-
-<p>The <code>setObject</code> method is interesting.  It includes an extra parameter that allows you to
-specify the type of the value.  As you can see in line 4, we use it to pass the enumeration
-as a string but with the type of <code>java.sql.Types.OTHER</code>.  Postgres uses that as a clue to
-consult the type of the column to do the right thing.</p>
-
-<h3>Adding a Column converter</h3>
-
-<p>The last step is to automatically convert a Postgres enum read from the database into
-a Scala enum.  This is done with a <code>Column</code> converter.  Its use parallels that of <code>createEnumToStatement</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">DbEnum</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">protected</span> <span class="k">def</span> <span class="n">enumToType</span><span class="o">[</span><span class="kt">E</span><span class="o">](</span><span class="n">convert</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">E</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">m</span><span class="k">:</span> <span class="kt">Manifest</span><span class="o">[</span><span class="kt">E</span><span class="o">])</span><span class="k">:</span> <span class="kt">Column</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Column</span> <span class="o">{</span>
-</span><span class='line'>        <span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="n">meta</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>            <span class="k">val</span> <span class="nc">MetaDataItem</span><span class="o">(</span><span class="n">qualified</span><span class="o">,</span> <span class="n">nullable</span><span class="o">,</span> <span class="n">clazz</span><span class="o">)</span> <span class="k">=</span> <span class="n">meta</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">val</span> <span class="n">s</span> <span class="k">=</span> <span class="n">value</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
-</span><span class='line'>                <span class="n">eitherToError</span><span class="o">(</span><span class="nc">Right</span><span class="o">(</span><span class="n">convert</span><span class="o">(</span><span class="n">s</span><span class="o">)))</span><span class="k">:</span> <span class="kt">MayErr</span><span class="o">[</span><span class="kt">SqlRequestError</span>, <span class="kt">E</span><span class="o">]</span>
-</span><span class='line'>            <span class="o">}</span> <span class="k">catch</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Exception</span> <span class="o">=&gt;</span>
-</span><span class='line'>                <span class="n">eitherToError</span><span class="o">(</span><span class="nc">Left</span><span class="o">(</span><span class="nc">TypeDoesNotMatch</span><span class="o">(</span><span class="s">&quot;Cannot convert &quot;</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span>
-</span><span class='line'>                    <span class="n">value</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">AnyRef</span><span class="o">].</span><span class="n">getClass</span> <span class="o">+</span> <span class="s">&quot; to &quot;</span> <span class="o">+</span>
-</span><span class='line'>                    <span class="n">m</span><span class="o">.</span><span class="n">runtimeClass</span><span class="o">.</span><span class="n">getSimpleName</span> <span class="o">+</span> <span class="s">&quot;for column &quot;</span> <span class="o">+</span>
-</span><span class='line'>                    <span class="n">qualified</span><span class="o">)))</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="c1">// createEnumToStatement, as before</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">object</span> <span class="nc">NoteCategory</span> <span class="k">extends</span> <span class="nc">DbEnum</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// define enum values and use createEnumToStatement, as before</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">implicit</span> <span class="k">val</span> <span class="n">rowToNoteCategory</span> <span class="k">=</span> <span class="n">enumToType</span><span class="o">[</span><span class="kt">NoteCategory</span><span class="o">](</span><span class="nc">NoteCategory</span><span class="o">.</span><span class="n">withName</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Some explanatory comments:</p>
-
-<ol>
-<li><code>enumToType</code> is again parameterized by the type of the enum.</li>
-<li>In line 2 it consumes a function that converts a string (the value read from the database)
-into a value of type E (the enum).  For most enumerations this is simply the <code>withName</code> function
-that we get for free when defining the enum.  And that is, indeed, what&rsquo;s passed in line 23.</li>
-<li>Things can go wrong in two ways:  we might get an unexpected value from the database that
-can&rsquo;t be converted by <code>withName</code> (probably indicating that your Postgres enum and Scala enum are
-out of synch) and, if things are really borked, we might not even get a string from the database.
-Either of these are caught and turned into an error in lines 11-14.</li>
-<li>If the column should never have a null value, you can wrap <code>enumToType</code> in line 23 with
-<code>Column.nonNull(enumToType...)</code>.  This will throw the familiar &ldquo;Unexpected nullable&rdquo; error if
-a null value is found.  If nulls are expected, then read the value as an <code>Option[SortOrder]</code>, for example.</li>
-</ol>
-
-
-<h2>Final Comments</h2>
-
-<p>The <a href="http://bwbecker.github.io/downloads/code/postgres_enums.scala">test program</a> is
-self-contained except for the first
-import line.  That&rsquo;s what provides some support code to make the database connection.  I&rsquo;ll
-write that up soon.</p>
-
-<p>The other imports are</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">anorm._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.postgresql.util.PGobject</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">anorm.MayErr._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">java.sql.Connection</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s it!  Enjoy!</p>
-]]></content>
-  </entry>
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Hard-Won Introduction]]></title>
-    <link href="http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction/"/>
-    <updated>2015-05-05T08:14:41-04:00</updated>
-    <id>http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m doing a lot of development in Scala + Play these days.  I often come up against a problem with a &ldquo;hard won&rdquo; solution.  It might be a fundamental misunderstanding on my part, something I just haven&rsquo;t run into before, or where Googling isn&rsquo;t as helpful as it often is.  Regardless, the solution came at some pain to myself.  To help make that hard won solution less painful, I&rsquo;m posting here to remind me and to help others.</p>
 
-<p>I hope you find it useful.</p>
-]]></content>
-  </entry>
+<span class="byline author vcard">Posted by <span class="fn">Byron Weber Becker</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T10:40:25-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
   
-</feed>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/" data-via="" data-counturl="http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/05/postgres-enums-and-anorm/" title="Previous Post: Postgres Enums and Anorm">&laquo; Postgres Enums and Anorm</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/accessing-anorm-without-play/">Accessing Anorm Without Play</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/hard-won-introduction/">Hard-Won Introduction</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/bwbecker">@bwbecker</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'bwbecker',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Byron Weber Becker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

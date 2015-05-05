@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/</loc>
+    <lastmod>2015-05-05T10:40:25-04:00</lastmod>
+  </url>
+  <url>
     <loc>http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/</loc>
     <lastmod>2015-05-05T08:24:47-04:00</lastmod>
   </url>

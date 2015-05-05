@@ -9,8 +9,10 @@
   <meta name="author" content="Byron Weber Becker">
 
   
-  <meta name="description" content="Types are a wonderful thing in programming languages. It&rsquo;s the main reason
-I&rsquo;m using Scala. Having the compiler do a proof that at least &hellip;">
+  <meta name="description" content="Ever want to use Anorm to access a database without all the overhead of Play?
+I did in my
+previous post
+where I played with Postgres enumerations. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +68,54 @@ I&rsquo;m using Scala. Having the compiler do a proof that at least &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/05/accessing-anorm-without-play/">Accessing Anorm Without Play</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-05T10:40:25-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ever want to use Anorm to access a database without all the overhead of Play?<br/>
+I did in my
+<a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">previous post</a>
+where I played with Postgres enumerations.  Here&rsquo;s the code I used.</p>
+
+<p>It has a couple of features:</p>
+
+<ul>
+<li>It reads the .pg_service.conf and .pgpass files from your home directory to find
+a service definition and the appropriate passwords to use for the connection.  This
+keeps passwords and such out of your code and out of your repository.</li>
+<li>It mimics the <code>DB</code> class in Anorm to provide a database connection that you can
+then use with Anorm.</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/05/accessing-anorm-without-play/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -156,6 +206,10 @@ with a Scala program via the Anorm database access library.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/accessing-anorm-without-play/">Accessing Anorm Without Play</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>

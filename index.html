@@ -9,10 +9,9 @@
   <meta name="author" content="Byron Weber Becker">
 
   
-  <meta name="description" content="Ever want to use Anorm to access a database without all the overhead of Play?
-I did in my
-previous post
-where I played with Postgres enumerations. &hellip;">
+  <meta name="description" content="I went to implement my enumerations discoveries as chronicalled in
+Postgres Enums and Anorm
+and realized anew something that had niggled away in the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +67,74 @@ where I played with Postgres enumerations. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/06/postgres-enums-and-anorm/">Postgres Enums and Anorm, Part 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-06T09:19:12-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:19 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I went to implement my enumerations discoveries as chronicalled in
+<a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
+and realized anew something that had niggled away in the back of my brain:  I&rsquo;m working
+with data from a legacy database and most of the enumerations are indecipherable.  Many of
+the enumerations are like this:</p>
+
+<figure class='code'><figcaption><span>Listing 1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">_quest</span><span class="p">.</span><span class="n">quest_instruction_mode</span> <span class="k">AS</span> <span class="n">ENUM</span>
+</span><span class='line'>   <span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;CO&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>where &lsquo;P&rsquo; stands for (as far as we can tell!) &ldquo;in-Person&rdquo; and &lsquo;CO&rsquo; stands for &ldquo;Course-Online&rdquo;.</p>
+
+<p>So naturally, I&rsquo;d like an intelligible Scala enumeration such as</p>
+
+<figure class='code'><figcaption><span>Listing 2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">InstructionMode</span> <span class="k">extends</span> <span class="nc">DbEnum</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">type</span> <span class="kt">InstructionMode</span> <span class="o">=</span> <span class="nc">Value</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="nc">InPerson</span> <span class="k">=</span> <span class="nc">Value</span><span class="o">(</span><span class="s">&quot;P&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="nc">Online</span> <span class="k">=</span> <span class="nc">Value</span><span class="o">(</span><span class="s">&quot;CO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But here&rsquo;s the rub:  <code>println(InstructionMode.Online)</code> still prints the indecipherable <code>CO</code>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/06/postgres-enums-and-anorm/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -153,6 +220,9 @@ string with one space in it rather than good &lsquo;ole <code>null</code>.</p>
 <p>This blog post considers how to marry enumerations in a Postgres database
 with a Scala program via the Anorm database access library.</p>
 
+<blockquote><p>  Spoiler:  This is not what I actually implemented.  After you read
+  this, be sure to read the <a href="http://bwbecker.github.io/blog/2015/05/06/postgres-enums-and-anorm/">follow-up</a></p></blockquote>
+
 </div>
   
   
@@ -206,6 +276,10 @@ with a Scala program via the Anorm database access library.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/06/postgres-enums-and-anorm/">Postgres Enums and Anorm, Part 2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/05/05/accessing-anorm-without-play/">Accessing Anorm Without Play</a>

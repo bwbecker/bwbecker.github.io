@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Anorm, | Hard-Won Scala + Play]]></title>
+  <link href="http://bwbecker.github.io/blog/categories/anorm/atom.xml" rel="self"/>
+  <link href="http://bwbecker.github.io/"/>
+  <updated>2015-05-13T09:46:45-04:00</updated>
+  <id>http://bwbecker.github.io/</id>
+  <author>
+    <name><![CDATA[Byron Weber Becker]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Accessing Anorm Without Play]]></title>
+    <link href="http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/"/>
+    <updated>2015-05-05T10:40:25-04:00</updated>
+    <id>http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play</id>
+    <content type="html"><![CDATA[<p>Ever want to use Anorm to access a database without all the overhead of Play?<br/>
+I did in my
+<a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">previous post</a>
+where I played with Postgres enumerations.  Here&rsquo;s the code I used.</p>
+
+<p>It has a couple of features:</p>
+
+<ul>
+<li>It reads the .pg_service.conf and .pgpass files from your home directory to find
+a service definition and the appropriate passwords to use for the connection.  This
+keeps passwords and such out of your code and out of your repository.</li>
+<li>It mimics the <code>DB</code> class in Anorm to provide a database connection that you can
+then use with Anorm.</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>DB class</h2>
+
+<p>The <code>DB</code> class provides three methods:  two that get a connection and one that mimics <code>withConnection</code>
+(<a href="https://www.playframework.com/documentation/2.3.x/api/scala/index.html#play.api.db.DB$">scaladoc</a>).
+<code>withConnection</code> is the one I use the most (by far) because it handles closing the connection.</p>
+
+<p><code>DB</code> assumes the postgres driver is available in the class path and uses <code>PgService</code> (see below) to
+get the connection data.</p>
+
+<p>Typical usage is as follows:</p>
+
+<pre><code class="scala">        val db = DB("local_dev")
+
+        db.withConnection { implicit conn =&gt;
+
+            val sql = SQL"""insert into _oat.test_enum (note_category, sort_order) 
+                    VALUES  (${NoteCategory.Advisor}, ${SortOrder.Ascending}) RETURNING id"""
+            val id = sql.as(anorm.SqlParser.scalar[Long].singleOpt) 
+        }
+</code></pre>
+
+<p>The &ldquo;local_dev&rdquo; that is passed to the <code>DB</code> constructor is the name of the postgres service
+to find in the .pg_service.conf file.</p>
+
+<p>And, here&rsquo;s the code for <code>DB</code>:</p>
+
+<pre><code class="scala DB.scala">package oatLib.db
+
+import java.sql.DriverManager
+import java.sql.Connection
+
+/**
+ * Lots of this is stolen from Play.
+ */
+case class DB(service:String) {
+
+  private val pgService = PgService(service)
+
+  private val url = s"jdbc:postgresql://${pgService.host}:${pgService.port}/${pgService.dbname}"
+  private val user = pgService.user
+  private val password = pgService.password
+
+  Class.forName("org.postgresql.Driver").newInstance
+
+
+  /**
+   * Retrieves a JDBC connection.
+   *
+   * Don't forget to release the connection at some point by calling close().
+   *
+   * @return a JDBC connection
+   * @throws an error if the required data source is not registered
+   */
+  def getConnection(): Connection = {
+    var props = new java.util.Properties();
+    props.setProperty("user", user);
+    props.setProperty("password", password);
+
+    DriverManager.getConnection(url, props)
+  }
+
+  /**
+   * Retrieves a JDBC connection.
+   *
+   * Don't forget to release the connection at some point by calling close().
+   *
+   * @param autocommit when `true`, sets this connection to auto-commit
+   * @return a JDBC connection
+   * @throws an error if the required data source is not registered
+   */
+  def getConnection(autocommit: Boolean = true): Connection = {
+    val connection = this.getConnection
+    connection.setAutoCommit(autocommit)
+    connection
+  }
+
+  /**
+   * Execute a block of code, providing a JDBC connection. The connection and all created statements are
+   * automatically released.
+   *
+   * @param name The datasource name.
+   * @param block Code block to execute.
+   */
+  def withConnection[A](block: Connection ⇒ A): A = {
+    val connection = getConnection
+    try {
+      block(connection)
+    } finally {
+      connection.close()
+    }
+  }
+}
+</code></pre>
+
+<h2>PgService class</h2>
+
+<p>The <code>apply</code> method looks in your home directory for the <code>.pg_service.conf</code> and
+<code>.pgpass</code> files.  The postgres programs that use <code>.pgpass</code> have a sophisticated
+matching algorithm to choose the specific password required based on the
+database, user, port, etc.  I doubt that I&rsquo;ve completely reverse engineered
+that algorithm, but I believe this comes pretty close.</p>
+
+<pre><code class="scala">package oatLib.db
+
+import scala.io.{ Source }
+
+/**
+ * Read the service information from the account's pg_service.conf
+ * and pgpass files.
+ *
+ * It assumes they're are ~/.pg_service.conf and ~/.pgpass.
+ *
+ */
+case class PgService(service: String,
+                     host: String,
+                     port: Int,
+                     dbname: String,
+                     user: String,
+                     password: String)
+
+object PgService {
+
+  /**
+   *  Get the details for the named service from the combination of
+   *  the service source (svcFile) and the password source (pwdFile).
+   */
+  def apply(service: String, svcFile: Source, pwdFile: Source): PgService = {
+
+    def getService: Map[String, String] = {
+      // Suck in the services file, get rid of services before the one
+      // we want, take the one we want, turn it into a map of key-value
+      // pairs.
+      val allSvc = svcFile.getLines.toList
+      val dropLeadingSvc = allSvc.dropWhile(line ⇒ line != s"[$service]")
+        .dropWhile(line ⇒ line == s"[$service]")
+      val svcDef = dropLeadingSvc.takeWhile(line ⇒ line.matches("[^=]+=[^=]+"))
+      val svcDef2 = svcDef.map(line ⇒ line.split('=')).map(a ⇒ (a(0), a(1)))
+      svcDef2.toMap
+    }
+
+    val props = getService
+    if (props.isEmpty) {
+      throw new Exception(s"Unable to find a service configuration for $service")      
+    }
+    val host = props("host")
+    val port = props("port").toInt
+    val dbname = props("dbname")
+    val user = props("user")
+
+    val pwCandidates = pwdFile.getLines.toList
+      .filter(_.matches(s"^([^:]*:){0}($host|\\*):.*")) // matches host
+      .filter(_.matches(s"^([^:]*:){1}($port|\\*):.*")) // matches port
+      .filter(_.matches(s"^([^:]*:){2}($dbname|\\*):.*")) // matches dbname
+      .filter(_.matches(s"^([^:]*:){3}($user|\\*):.*")) // matches user
+
+    if (pwCandidates.isEmpty) {
+      throw new Exception(s"Unable to find a password for $host:$port:$dbname:$user")
+    }
+    val password = pwCandidates.headOption.map(_.split(':')(4)).getOrElse("")
+    new PgService(service, host, port, dbname, user, password)
+  }
+
+  /**
+   * Get the details for the named service from the default config
+   * files (~/.pg_service.conf and ~/.pgpass).
+   */
+  def apply(service: String): PgService =
+    apply(service,
+      Source.fromFile(sys.env("HOME") + "/.pg_service.conf"),
+      Source.fromFile(sys.env("HOME") + "/.pgpass"))
+}
+</code></pre>
+
+<p>That&rsquo;s it!  Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

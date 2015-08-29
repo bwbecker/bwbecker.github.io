@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Javascript | Hard-Won Scala + Play]]></title>
+  <link href="http://bwbecker.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://bwbecker.github.io/"/>
+  <updated>2015-08-29T07:27:38-04:00</updated>
+  <id>http://bwbecker.github.io/</id>
+  <author>
+    <name><![CDATA[Byron Weber Becker]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Submit on Enter With Twitter's Typeahead Widget]]></title>
+    <link href="http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/"/>
+    <updated>2015-08-29T05:40:03-04:00</updated>
+    <id>http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget</id>
+    <content type="html"><![CDATA[<p>Twitter&rsquo;s <a href="https://twitter.github.io/typeahead.js/">Typeahead widget</a> adds suggestions to an input
+field based on what the user has already typed.  We&rsquo;re all familiar with such widgets from
+Google searches, for example.</p>
+
+<p><img class="right" src="/images/typeahead_example.png" title="&lsquo;Typeahead Example&rsquo;" ></p>
+
+<p>I thought it would be easy to set up and get going.  Indeed, seeing first (promising) results
+went really quickly.  But then I spent the rest of the day figuring out the corner cases that
+weren&rsquo;t handled and Dr. Google didn&rsquo;t provide answers for.</p>
+
+<p>The Typeahead use case seems to be one input field in a larger form.  It helps find the correct
+value for that field but something else in the form handles the submission.</p>
+
+<p>My use case is a different but very common one &ndash; search.  The form has a single search field
+used to search for, in my case, a person.  The search could be on one of the unique identifiers
+(a number or alphameric userid) or based on a name.  The name is where the typeahead is needed.
+Once the user has found the right person (perhaps by selecting off the typeahead list), hit
+enter and it&rsquo;s submitted.</p>
+
+<p>The hard part was getting it to play nicely with the keyboard:  Submit on enter, submit the correct
+suggestion if chosen with the arrow keys, avoid resubmitting contents the are already in the form
+from a previous submission.</p>
+
+<p>Finally, when the submission occurs it should be with the userid for uniqueness.  Each user&rsquo;s
+userid is returned from my suggestion web service along with the name.</p>
+
+<!-- More -->
+
+
+<p>I think the basic issue is Typeahead&rsquo;s event model and API is incomplete.  I kept looking
+in the documentation for two things:</p>
+
+<ol>
+<li>A method to get the current suggestion</li>
+<li>An event that says &ldquo;Here&rsquo;s the suggestion that was chosen&rdquo;</li>
+</ol>
+
+
+<p>I found the <code>typeahead:change</code> event to be useless.  I could not figure out how it gets
+triggered.</p>
+
+<p>The <code>typeahead:select</code> and <code>typeahead:autocomplete</code> were useful for when the user hit
+tab or clicked in another field.  But not when they hit the enter key.</p>
+
+<p>My suggestions web service returns json lists such as:</p>
+
+<pre><code class="javascript">[
+  {  "surname": "Bailey", "givennames": "Bea", "userid": "bbailey" },
+  {  "surname": "Barker", "givennames": "Bob", "userid": "babarker" }
+]
+</code></pre>
+
+<p>The HTML is</p>
+
+<p>&#8220;` html</p>
+
+<div><form action="/search" method="GET" id="search">
+    <input type="text" id="searchTerm" name="searchTerm" value="" 
+        class="search form-control typeahead" autocomplete="off">
+    </form></div>
+
+
+<pre><code>
+Here's the Javascript I finally came up with:
+</code></pre>
+
+<p>asisJS = function () {</p>
+
+<p>  var initSearchTypeahead = function () {</p>
+
+<pre><code>/*
+ * A hack to keep track of the currently selected userid
+ * when the cursor keys are moved.
+ */
+var currentQuery = "";
+
+/*
+ * Cursor moved down the list of suggestions.  Keep track
+ * of the current suggestion in currentQuery
+ */
+function logCursorChange(ev, suggestion) {
+  if (typeof suggestion == 'undefined' ) {
+    currentQuery = "";
+  } else {
+    currentQuery = suggestion.userid;
+  }
+}
+
+/*
+ * User triggered a submit, either via the typeahead:submit 
+ * or autocomplete event
+ */
+function submitSuggestion(ev, suggestion) {
+  $('#searchTerm').val(suggestion.userid);
+  $('#search').submit();    // submit the form
+}
+
+/*
+ * Initialize the search field with the typeahead widget
+ * The source function is hacked so it gets hits if the first
+ * character is in [A-Z] (a name).  Otherwise (eg uwid, userid, etc)
+ * it does not.
+ */
+$('#searchTerm')
+  .typeahead(
+  {
+    minLength: 1
+  }, {
+    // Where to get the typeahead suggestions
+    source: function (query, processSync, processAsync) {
+      // If the field has contents (eg "who") that will be stored
+      // in currentQuery before the user starts to type.  Don't want that.
+      currentQuery = "";
+
+      if (query.charAt(0) &gt;= "A" &amp;&amp; query.charAt(0) &lt;= "Z") {
+        // Get the autocomplete;  We don't have any synchronous
+        // suggestions.  Call the suggestion API to get 10 suggestions
+        // given the contents of the query.  The query may contain
+        // spaces, letters, and numbers -- nothing else.  Replace
+        // the spaces with _ for http transport.
+        processSync([]);
+        $.get('/api/v2/student/' + query.replace(/ /g, '_') + '/typeahead/10', 
+            function (json) {  processAsync(json.data);  }
+        );
+      } else {
+        // Not a name; don't do the autocomplete
+        processSync([]);
+        processAsync([]);
+        currentQuery = query;
+      }
+    },
+
+    // How to display a suggestion
+    display: function (suggestion) {
+      return suggestion.surname + ", " + suggestion.givennames;
+    },
+
+    // Bug in Typeahead.
+    // See https://github.com/twitter/typeahead.js/issues/1232
+    limit: 20     
+
+  })
+
+   //Catch typeahead events
+  .on('typeahead:select', submitSuggestion)
+  .on('typeahead:autocomplete', submitSuggestion)
+  .on('typeahead:cursorchange', logCursorChange)
+
+  // Submit the form if the user hits "enter"
+  .on('keydown', function (event) {
+    if (event.which === 13) {
+      if (currentQuery === '') {
+        // Trigger the default (first) suggestion
+        $('.tt-suggestion:first-child').trigger('click');
+      } else {
+        // The suggestion they chose with arrow keys
+        $('#searchTerm').val(currentQuery);
+        $('#search').submit();    // submit the form
+      }
+    }
+  })
+;
+
+// Select any text already in the textbox (eg from error handling)
+// when the page loads.
+$('#searchTerm').focus().select();
+</code></pre>
+
+<p>  };</p>
+
+<p>  return {
+    initSearchTypeahead: initSearchTypeahead
+  };
+}
+();
+&#8220;`</p>
+
+<p>There you have it;  hope it&rsquo;s been helpful!</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -72,6 +72,101 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/08/29/pain-with-twitter-typeahead-widget/">Submit on Enter With Twitter&#8217;s Typeahead Widget</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-29T05:40:03-04:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Twitter&rsquo;s <a href="https://twitter.github.io/typeahead.js/">Typeahead widget</a> adds suggestions to an input
+field based on what the user has already typed.  We&rsquo;re all familiar with such widgets from
+Google searches, for example.</p>
+
+<p><img class="right" src="/images/typeahead_example.png" title="'Typeahead Example'" ></p>
+
+<p>I thought it would be easy to set up and get going.  Indeed, seeing first (promising) results
+went really quickly.  But then I spent the rest of the day figuring out the corner cases that
+weren&rsquo;t handled and Dr. Google didn&rsquo;t provide answers for.</p>
+
+<p>The Typeahead use case seems to be one input field in a larger form.  It helps find the correct
+value for that field but something else in the form handles the submission.</p>
+
+<p>My use case is a different but very common one &ndash; search.  The form has a single search field
+used to search for, in my case, a person.  The search could be on one of the unique identifiers
+(a number or alphameric userid) or based on a name.  The name is where the typeahead is needed.
+Once the user has found the right person (perhaps by selecting off the typeahead list), hit
+enter and it&rsquo;s submitted.</p>
+
+<p>The hard part was getting it to play nicely with the keyboard:  Submit on enter, submit the correct
+suggestion if chosen with the arrow keys, avoid resubmitting contents the are already in the form
+from a previous submission.</p>
+
+<p>Finally, when the submission occurs it should be with the userid for uniqueness.  Each user&rsquo;s
+userid is returned from my suggestion web service along with the name.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/08/29/pain-with-twitter-typeahead-widget/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/">Painful Switch From Eclipse to Idea IDE</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-28T07:49:06-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:49 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been using Eclipse for my Play! + Scala development, but frustration reached the tipping point and I decided to give <a href="https://www.jetbrains.com/idea/">IDEA</a> a try.  It had been highly recommended by fellow developers at a Scala Meetup (now defunct, sadly).  The conversion process has been painful, with some hard-won lessons to report.</p>
+
+<p>So, what drove me around the bend with Eclipse?  One more bout with it reporting
+many false positive compilation errors with no easy way to reset things that I could find.  SBT would give a completely clean compile;  Eclipse would report dozens of errors spread over many, many files.  That, and I can be a sucker for new toys.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/05/06/postgres-enums-and-anorm/">Postgres Enums and Anorm, Part 2</a></h1>
     
     
@@ -277,6 +372,14 @@ with a Scala program via the Anorm database access library.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/29/pain-with-twitter-typeahead-widget/">Submit on Enter With Twitter&#8217;s Typeahead Widget</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/">Painful Switch From Eclipse to Idea IDE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/06/postgres-enums-and-anorm/">Postgres Enums and Anorm, Part 2</a>
       </li>
     
@@ -288,11 +391,12 @@ with a Scala program via the Anorm database access library.</p>
         <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/05/05/hard-won-introduction/">Hard-Won Introduction</a>
-      </li>
-    
   </ul>
+</section>
+
+<section>
+	<h1>Tag Cloud</h1>
+	<span id="tag-cloud"><a href='/blog/categories/anorm' style='font-size: 145.0%'>anorm</a> <a href='/blog/categories/eclipse' style='font-size: 115.0%'>eclipse</a> <a href='/blog/categories/enumeration' style='font-size: 115.0%'>enumeration</a> <a href='/blog/categories/ide' style='font-size: 115.0%'>ide</a> <a href='/blog/categories/intellij' style='font-size: 115.0%'>intellij</a> <a href='/blog/categories/javascript' style='font-size: 115.0%'>javascript</a> <a href='/blog/categories/json' style='font-size: 115.0%'>json</a> <a href='/blog/categories/play' style='font-size: 130.0%'>play</a> <a href='/blog/categories/postgres' style='font-size: 145.0%'>postgres</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typeahead' style='font-size: 115.0%'>typeahead</a> </span>
 </section>
 
 

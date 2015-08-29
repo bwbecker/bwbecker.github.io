@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Submit on Enter With Twitter&#8217;s Typeahead Widget - Hard-Won Scala + Play</title>
+  <meta name="author" content="Byron Weber Becker">
+
+  
+  <meta name="description" content="Solving the corner cases when using Twitter's Typeahead widget with submit on enter.">
+  
+  <meta name="keywords" content="twitter typeahead, typeahead, submit-on-enter" />
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Hard-Won Scala + Play" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Hard-Won Scala + Play</a></h1>
+  
+    <h2>Lessons in web development using Scala and the Play! framework</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="bwbecker.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Submit on Enter With Twitter&#8217;s Typeahead Widget</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-29T05:40:03-04:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Twitter&rsquo;s <a href="https://twitter.github.io/typeahead.js/">Typeahead widget</a> adds suggestions to an input
+field based on what the user has already typed.  We&rsquo;re all familiar with such widgets from
+Google searches, for example.</p>
+
+<p><img class="right" src="/images/typeahead_example.png" title="'Typeahead Example'" ></p>
+
+<p>I thought it would be easy to set up and get going.  Indeed, seeing first (promising) results
+went really quickly.  But then I spent the rest of the day figuring out the corner cases that
+weren&rsquo;t handled and Dr. Google didn&rsquo;t provide answers for.</p>
+
+<p>The Typeahead use case seems to be one input field in a larger form.  It helps find the correct
+value for that field but something else in the form handles the submission.</p>
+
+<p>My use case is a different but very common one &ndash; search.  The form has a single search field
+used to search for, in my case, a person.  The search could be on one of the unique identifiers
+(a number or alphameric userid) or based on a name.  The name is where the typeahead is needed.
+Once the user has found the right person (perhaps by selecting off the typeahead list), hit
+enter and it&rsquo;s submitted.</p>
+
+<p>The hard part was getting it to play nicely with the keyboard:  Submit on enter, submit the correct
+suggestion if chosen with the arrow keys, avoid resubmitting contents the are already in the form
+from a previous submission.</p>
+
+<p>Finally, when the submission occurs it should be with the userid for uniqueness.  Each user&rsquo;s
+userid is returned from my suggestion web service along with the name.</p>
+
+<!-- More -->
+
+
+<p>I think the basic issue is Typeahead&rsquo;s event model and API is incomplete.  I kept looking
+in the documentation for two things:</p>
+
+<ol>
+<li>A method to get the current suggestion</li>
+<li>An event that says &ldquo;Here&rsquo;s the suggestion that was chosen&rdquo;</li>
+</ol>
+
+
+<p>I found the <code>typeahead:change</code> event to be useless.  I could not figure out how it gets
+triggered.</p>
+
+<p>The <code>typeahead:select</code> and <code>typeahead:autocomplete</code> were useful for when the user hit
+tab or clicked in another field.  But not when they hit the enter key.</p>
+
+<p>My suggestions web service returns json lists such as:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>  <span class="s2">&quot;surname&quot;</span><span class="o">:</span> <span class="s2">&quot;Bailey&quot;</span><span class="p">,</span> <span class="s2">&quot;givennames&quot;</span><span class="o">:</span> <span class="s2">&quot;Bea&quot;</span><span class="p">,</span> <span class="s2">&quot;userid&quot;</span><span class="o">:</span> <span class="s2">&quot;bbailey&quot;</span> <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>  <span class="s2">&quot;surname&quot;</span><span class="o">:</span> <span class="s2">&quot;Barker&quot;</span><span class="p">,</span> <span class="s2">&quot;givennames&quot;</span><span class="o">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;userid&quot;</span><span class="o">:</span> <span class="s2">&quot;babarker&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The HTML is</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div&gt;&lt;form</span> <span class="na">action=</span><span class="s">&quot;/search&quot;</span> <span class="na">method=</span><span class="s">&quot;GET&quot;</span> <span class="na">id=</span><span class="s">&quot;search&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;searchTerm&quot;</span> <span class="na">name=</span><span class="s">&quot;searchTerm&quot;</span> <span class="na">value=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="na">class=</span><span class="s">&quot;search form-control typeahead&quot;</span> <span class="na">autocomplete=</span><span class="s">&quot;off&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/form&gt;&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here&rsquo;s the Javascript I finally came up with:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">asisJS</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">initSearchTypeahead</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">     * A hack to keep track of the currently selected userid</span>
+</span><span class='line'><span class="cm">     * when the cursor keys are moved.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">currentQuery</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">     * Cursor moved down the list of suggestions.  Keep track</span>
+</span><span class='line'><span class="cm">     * of the current suggestion in currentQuery</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">function</span> <span class="nx">logCursorChange</span><span class="p">(</span><span class="nx">ev</span><span class="p">,</span> <span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">suggestion</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">currentQuery</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">currentQuery</span> <span class="o">=</span> <span class="nx">suggestion</span><span class="p">.</span><span class="nx">userid</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">     * User triggered a submit, either via the typeahead:submit </span>
+</span><span class='line'><span class="cm">     * or autocomplete event</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">function</span> <span class="nx">submitSuggestion</span><span class="p">(</span><span class="nx">ev</span><span class="p">,</span> <span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#searchTerm&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">suggestion</span><span class="p">.</span><span class="nx">userid</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#search&#39;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>    <span class="c1">// submit the form</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">     * Initialize the search field with the typeahead widget</span>
+</span><span class='line'><span class="cm">     * The source function is hacked so it gets hits if the first</span>
+</span><span class='line'><span class="cm">     * character is in [A-Z] (a name).  Otherwise (eg uwid, userid, etc)</span>
+</span><span class='line'><span class="cm">     * it does not.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#searchTerm&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">typeahead</span><span class="p">(</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="nx">minLength</span><span class="o">:</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="p">},</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Where to get the typeahead suggestions</span>
+</span><span class='line'>        <span class="nx">source</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">processSync</span><span class="p">,</span> <span class="nx">processAsync</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">// If the field has contents (eg &quot;who&quot;) that will be stored</span>
+</span><span class='line'>          <span class="c1">// in currentQuery before the user starts to type.  Don&#39;t want that.</span>
+</span><span class='line'>          <span class="nx">currentQuery</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="s2">&quot;A&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">query</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="s2">&quot;Z&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Get the autocomplete;  We don&#39;t have any synchronous</span>
+</span><span class='line'>            <span class="c1">// suggestions.  Call the suggestion API to get 10 suggestions</span>
+</span><span class='line'>            <span class="c1">// given the contents of the query.  The query may contain</span>
+</span><span class='line'>            <span class="c1">// spaces, letters, and numbers -- nothing else.  Replace</span>
+</span><span class='line'>            <span class="c1">// the spaces with _ for http transport.</span>
+</span><span class='line'>            <span class="nx">processSync</span><span class="p">([]);</span>
+</span><span class='line'>            <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/api/v2/student/&#39;</span> <span class="o">+</span> <span class="nx">query</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/ /g</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/typeahead/10&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="kd">function</span> <span class="p">(</span><span class="nx">json</span><span class="p">)</span> <span class="p">{</span>  <span class="nx">processAsync</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>  <span class="p">}</span>
+</span><span class='line'>            <span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Not a name; don&#39;t do the autocomplete</span>
+</span><span class='line'>            <span class="nx">processSync</span><span class="p">([]);</span>
+</span><span class='line'>            <span class="nx">processAsync</span><span class="p">([]);</span>
+</span><span class='line'>            <span class="nx">currentQuery</span> <span class="o">=</span> <span class="nx">query</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// How to display a suggestion</span>
+</span><span class='line'>        <span class="nx">display</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nx">suggestion</span><span class="p">.</span><span class="nx">surname</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nx">suggestion</span><span class="p">.</span><span class="nx">givennames</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Bug in Typeahead.</span>
+</span><span class='line'>        <span class="c1">// See https://github.com/twitter/typeahead.js/issues/1232</span>
+</span><span class='line'>        <span class="nx">limit</span><span class="o">:</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="c1">//Catch typeahead events</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;typeahead:select&#39;</span><span class="p">,</span> <span class="nx">submitSuggestion</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;typeahead:autocomplete&#39;</span><span class="p">,</span> <span class="nx">submitSuggestion</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;typeahead:cursorchange&#39;</span><span class="p">,</span> <span class="nx">logCursorChange</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Submit the form if the user hits &quot;enter&quot;</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;keydown&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nx">currentQuery</span> <span class="o">===</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Trigger the default (first) suggestion</span>
+</span><span class='line'>            <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.tt-suggestion:first-child&#39;</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// The suggestion they chose with arrow keys</span>
+</span><span class='line'>            <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#searchTerm&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">currentQuery</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#search&#39;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>    <span class="c1">// submit the form</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>    <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Select any text already in the textbox (eg from error handling)</span>
+</span><span class='line'>    <span class="c1">// when the page loads.</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#searchTerm&#39;</span><span class="p">).</span><span class="nx">focus</span><span class="p">().</span><span class="nx">select</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">initSearchTypeahead</span><span class="o">:</span> <span class="nx">initSearchTypeahead</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There you have it;  hope it&rsquo;s been helpful!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Byron Weber Becker</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-08-29T05:40:03-04:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:40 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/typeahead/'>typeahead</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/" data-via="" data-counturl="http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/" title="Previous Post: Painful switch from Eclipse to Idea IDE">&laquo; Painful switch from Eclipse to Idea IDE</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/08/29/pain-with-twitter-typeahead-widget/">Submit on Enter With Twitter&#8217;s Typeahead Widget</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/">Painful Switch From Eclipse to Idea IDE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/06/postgres-enums-and-anorm/">Postgres Enums and Anorm, Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/accessing-anorm-without-play/">Accessing Anorm Without Play</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/05/postgres-enums-and-anorm/">Postgres Enums and Anorm</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+	<h1>Tag Cloud</h1>
+	<span id="tag-cloud"><a href='/blog/categories/anorm' style='font-size: 145.0%'>anorm</a> <a href='/blog/categories/eclipse' style='font-size: 115.0%'>eclipse</a> <a href='/blog/categories/enumeration' style='font-size: 115.0%'>enumeration</a> <a href='/blog/categories/ide' style='font-size: 115.0%'>ide</a> <a href='/blog/categories/intellij' style='font-size: 115.0%'>intellij</a> <a href='/blog/categories/javascript' style='font-size: 115.0%'>javascript</a> <a href='/blog/categories/json' style='font-size: 115.0%'>json</a> <a href='/blog/categories/play' style='font-size: 130.0%'>play</a> <a href='/blog/categories/postgres' style='font-size: 145.0%'>postgres</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typeahead' style='font-size: 115.0%'>typeahead</a> </span>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Byron Weber Becker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hardwonscalaplay';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/';
+        var disqus_url = 'http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

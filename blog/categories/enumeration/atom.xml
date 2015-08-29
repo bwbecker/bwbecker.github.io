@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Enumeration | Hard-Won Scala + Play]]></title>
+  <link href="http://bwbecker.github.io/blog/categories/enumeration/atom.xml" rel="self"/>
+  <link href="http://bwbecker.github.io/"/>
+  <updated>2015-08-29T07:27:38-04:00</updated>
+  <id>http://bwbecker.github.io/</id>
+  <author>
+    <name><![CDATA[Byron Weber Becker]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Postgres Enums and Anorm]]></title>
+    <link href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/"/>
+    <updated>2015-05-05T08:24:47-04:00</updated>
+    <id>http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm</id>
+    <content type="html"><![CDATA[<p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
+I&rsquo;m using Scala.  Having the compiler do a proof that at least part of my
+program is correct is a huge advantage over a dynamically typed language.</p>
+
+<p>Databases can also make use of types &ndash; with similar advantages.  In my current
+project we&rsquo;ve been
+receiving data from a database that does not use types or other constraints
+that are the hallmark of modern database design. What a mess!  Tables with
+invalid values, or columns that are never null but nulls are nevertheless allowed,
+or a column that allows nulls but represents them as either the empty string or a
+string with one space in it rather than good &lsquo;ole <code>null</code>.</p>
+
+<p>This blog post considers how to marry enumerations in a Postgres database
+with a Scala program via the Anorm database access library.</p>
+
+<blockquote><p>  Spoiler:  This is not what I actually implemented.  After you read
+  this, be sure to read the <a href="http://bwbecker.github.io/blog/2015/05/06/postgres-enums-and-anorm/">follow-up</a></p></blockquote>
+
+<!-- More -->
+
+
+<h2>Defining Enumerations</h2>
+
+<p>Let&rsquo;s start with defining enumerations.  The following SQL does it in
+Postgres:</p>
+
+<div class="aside">
+    <b>Aside:</b> You&#8217;ll note a couple of oddities in the SQL.  They&#8217;re vestiages of
+    the project I&#8217;m working on.  <code>_oat</code> is the database schema I use most frequently.  
+    <code>std_note_category</code> and <code>oat_sort_order</code> are actual enums from my current project.
+</div>
+
+
+<pre><code class="sql">CREATE TYPE _oat.std_note_category AS ENUM
+   ('Auto',
+    'Advisor',
+    'CourseEntry');
+
+CREATE TYPE _oat.oat_sort_order AS ENUM
+   ('ASC',
+    'DESC');
+</code></pre>
+
+<p>We can create a quick test table with</p>
+
+<pre><code class="sql">CREATE TABLE _oat.test_enum (
+    id               SERIAL,
+    note_category     _oat.std_note_category not null,
+    sort_order        _oat.oat_sort_order
+);
+</code></pre>
+
+<p>Note that one of columns is nullable, the other is not.</p>
+
+<p>The database enumeration is mirrored by two Scala enumerations.  The first
+one uses names that match the values in the database.  The second one
+uses more descriptive names.</p>
+
+<pre><code class="scala">object NoteCategory extends Enumeration {
+    type NoteCategory = Value
+
+    val Auto, Advisor, CourseEntry = Value
+}
+
+object SortOrder extends Enumeration {
+    type SortOrder = Value
+
+    val Ascending = Value("ASC")
+    val Descending = Value("DESC")
+}
+</code></pre>
+
+<h2>First Attempt:  casting in the queries</h2>
+
+<p>We can covert back and forth between the Scala enumerations and the
+database enumerations, but it&rsquo;s painful.  Works like this:</p>
+
+<pre><code class="scala">db.withConnection { implicit conn =&gt;
+
+    // Delete everything from the table
+    SQL"""truncate _oat.test_enum""".execute()
+
+    // Insert one of each
+    val sql = SQL"""insert into _oat.test_enum 
+            (note_category, sort_order) VALUES  
+                (${NoteCategory.Advisor.toString}::_oat.std_note_category,
+                 ${SortOrder.Ascending.toString}::_oat.oat_sort_order
+                ) RETURNING id"""
+    val id = sql.as(anorm.SqlParser.scalar[Long].singleOpt) 
+
+    // Read them back and verify
+    val r = SQL"""select * 
+                    from _oat.test_enum 
+                    where id = ${id}""".apply().head
+    val (nc, so) = (r[String]("note_category"), 
+                    r[Option[String]]("sort_order"))
+    assert(NoteCategory.withName(nc) == NoteCategory.Advisor)
+    assert(SortOrder.withName(so.get) == SortOrder.Ascending)
+}
+</code></pre>
+
+<p>The objections to this code include:</p>
+
+<ol>
+<li>The call to <code>toString</code> in lines 9 and 10.</li>
+<li>The explicit casts required in those same lines.</li>
+<li>Reading the values back again as strings in line 18 and 19.</li>
+<li>Explicitly converting the strings to enums in lines 20 and 21.</li>
+</ol>
+
+
+<p>Obviously, we want to do better.</p>
+
+<p>But before we dive into improving, a couple of things to note:</p>
+
+<ul>
+<li><code>withName</code> (lines 20, 21) converts a string like &ldquo;Auto&rdquo; into the corresponding enumeration value.</li>
+<li>In line 19 we use <code>Option[String]</code> because the column is nullable.</li>
+</ul>
+
+
+<h2>Second Attempt:  Using ToStatement and a Column converter</h2>
+
+<p>Anorm uses implicit functions to assist in converting to and from SQL
+statements.  We&rsquo;ll start with the <code>ToStatement</code>, which allows us to embed
+Scala enumerations in queries easily.  We need a couple of functions in
+each Scala enumeration we write, so put <code>createEnumToStatement</code> in a new superclass
+and then change the enumerations to extend that class:</p>
+
+<pre><code class="scala">class DbEnum extends Enumeration {
+    protected def createEnumToStatement[E]() = new ToStatement[E] {
+        def set(s: java.sql.PreparedStatement, index: Int, aValue: E): Unit = {
+            s.setObject(index, aValue.toString, java.sql.Types.OTHER)   
+        }   
+    }
+}
+
+object NoteCategory extends DbEnum {   // Extend DbEnum instead of Enumeration
+    ...     // same as before
+
+    implicit val noteCategoryToStatement = createEnumToStatement[NoteCategory]()
+}
+</code></pre>
+
+<p>Line 12 is the important one.  When you <code>import NoteCategory._</code> to bring the enum values into
+scope, this implicit is also brought into scope and used in the SQL statement to interpolate
+a <code>NoteCategory</code> value into the SQL.  The function&rsquo;s name
+doesn&rsquo;t matter.  You&rsquo;ll need a similar line for the other enum, of course.</p>
+
+<p>Line 12 is what allows us to drop the casts and the explicit calls to <code>toString</code> in the
+insertion SQL, above.  Replace it with the following:</p>
+
+<pre><code class="scala">    val sql = SQL"""insert into _oat.test_enum (note_category, sort_order) 
+            VALUES  (${NoteCategory.Advisor}, ${SortOrder.Ascending}) RETURNING id"""
+</code></pre>
+
+<p><code>createEnumToStatement</code> creates a new object that sets the appropriate value in a JDBC
+prepared statement.  If you look at the JavaDoc for <code>java.sql.PreparedStatement</code> you&rsquo;ll see
+many <code>set</code> statements:  <code>setInt</code>, <code>setBoolean</code>, <code>setTime</code>, etc.  Unfortunately, <code>setEnum</code> is
+not one of them.</p>
+
+<p>The <code>setObject</code> method is interesting.  It includes an extra parameter that allows you to
+specify the type of the value.  As you can see in line 4, we use it to pass the enumeration
+as a string but with the type of <code>java.sql.Types.OTHER</code>.  Postgres uses that as a clue to
+consult the type of the column to do the right thing.</p>
+
+<h3>Adding a Column converter</h3>
+
+<p>The last step is to automatically convert a Postgres enum read from the database into
+a Scala enum.  This is done with a <code>Column</code> converter.  Its use parallels that of <code>createEnumToStatement</code>:</p>
+
+<pre><code class="scala">class DbEnum extends Enumeration {
+    protected def enumToType[E](convert: String =&gt; E)(implicit m: Manifest[E]): Column[E] = Column {
+        (value, meta) =&gt;
+            val MetaDataItem(qualified, nullable, clazz) = meta
+
+            try { 
+                val s = value.asInstanceOf[String]
+                eitherToError(Right(convert(s))): MayErr[SqlRequestError, E]
+            } catch {
+              case e: Exception =&gt; 
+                eitherToError(Left(TypeDoesNotMatch("Cannot convert " + value + ":" + 
+                    value.asInstanceOf[AnyRef].getClass + " to " + 
+                    m.runtimeClass.getSimpleName + "for column " + 
+                    qualified)))
+           }
+    }
+    // createEnumToStatement, as before
+}
+
+object NoteCategory extends DbEnum {
+    // define enum values and use createEnumToStatement, as before
+
+    implicit val rowToNoteCategory = enumToType[NoteCategory](NoteCategory.withName)
+}
+</code></pre>
+
+<p>Some explanatory comments:</p>
+
+<ol>
+<li><code>enumToType</code> is again parameterized by the type of the enum.</li>
+<li>In line 2 it consumes a function that converts a string (the value read from the database)
+into a value of type E (the enum).  For most enumerations this is simply the <code>withName</code> function
+that we get for free when defining the enum.  And that is, indeed, what&rsquo;s passed in line 23.</li>
+<li>Things can go wrong in two ways:  we might get an unexpected value from the database that
+can&rsquo;t be converted by <code>withName</code> (probably indicating that your Postgres enum and Scala enum are
+out of synch) and, if things are really borked, we might not even get a string from the database.
+Either of these are caught and turned into an error in lines 11-14.</li>
+<li>If the column should never have a null value, you can wrap <code>enumToType</code> in line 23 with
+<code>Column.nonNull(enumToType...)</code>.  This will throw the familiar &ldquo;Unexpected nullable&rdquo; error if
+a null value is found.  If nulls are expected, then read the value as an <code>Option[SortOrder]</code>, for example.</li>
+</ol>
+
+
+<h2>Final Comments</h2>
+
+<p>The <a href="http://bwbecker.github.io/downloads/code/postgres_enums.scala">test program</a> is
+self-contained except for the first
+import line.  That&rsquo;s what provides some support code to make the database connection.  I&rsquo;ll
+write that up soon.</p>
+
+<p>The other imports are</p>
+
+<pre><code class="scala">import anorm._
+import org.postgresql.util.PGobject
+import anorm.MayErr._
+import java.sql.Connection
+</code></pre>
+
+<p>That&rsquo;s it!  Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.36" />
+    <meta name="description" content="How to marry enumerations in a Postgres database with a Scala program via the Anorm database access library.">
+<meta name="author" content="Byron Weber Becker">
+
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+<link rel="icon" href="/images/favicon.png" type="image/x-icon" />
+
+    <title>Postgres Enums and Anorm :: Hard-Won Scala &#43; Play</title>
+    
+    
+    <link href="/css/nucleus.css?1518113180" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?1518113180" rel="stylesheet">
+    <link href="/css/hybrid.css?1518113180" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1518113180" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1518113180" rel="stylesheet">
+    <link href="/css/auto-complete.css?1518113180" rel="stylesheet">
+    <link href="/css/theme.css?1518113180" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1518113180" rel="stylesheet">
+    
+
+    <script src="/js/jquery-2.x.min.js?1518113180"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/posts/postgres-enums-anorm/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <p style="font-family: Tahoma; font-weight: bold; font-size:16pt;">Hard-Won<br>Scala + Play</p>
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fa fa-search"></i></label>
+    <input data-search-input id="search-by" type="text" placeholder="Search...">
+    <span data-search-clear=""><i class="fa fa-close"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1518113180"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1518113180"></script>
+<script type="text/javascript">
+    
+        var baseurl = '\/';
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1518113180"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/posts/" title="Posts" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/posts/">
+          Posts
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" class="dd-item ">
+        <a href="/posts/silhouette&#43;cas/">
+        Silhouette&#43;CAS
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/submit-on-enter-with-twitter-typeahead/" title="Twitter Typeahead" class="dd-item ">
+        <a href="/posts/submit-on-enter-with-twitter-typeahead/">
+        Twitter Typeahead
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/painful-ide-switch/" title="Painful Ide Switch" class="dd-item ">
+        <a href="/posts/painful-ide-switch/">
+        Painful Ide Switch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-and-anorm-pt2/" title="Postgres Enums and Anorm, Part 2" class="dd-item ">
+        <a href="/posts/postgres-enums-and-anorm-pt2/">
+        Postgres Enums and Anorm, Part 2
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/anorm-without-play/" title="Using Anorm without Play" class="dd-item ">
+        <a href="/posts/anorm-without-play/">
+        Using Anorm without Play
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-anorm/" title="Postgres Enums and Anorm" class="dd-item active">
+        <a href="/posts/postgres-enums-anorm/">
+        Postgres Enums and Anorm
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Built with <a href="https://github.com/matcornic/hugo-theme-learn"><i class="fa fa-heart"></i></a> from <a href="http://getgrav.org">Grav</a> and <a href="http://gohugo.io/">Hugo</a></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Hard-Won Intro</a> > <a href='/posts/'>Posts</a> > Postgres Enums and Anorm
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#defining-enumerations">Defining Enumerations</a></li>
+<li><a href="#first-attempt-casting-in-the-queries">First Attempt:  casting in the queries</a></li>
+<li><a href="#second-attempt-using-tostatement-and-a-column-converter">Second Attempt:  Using ToStatement and a Column converter</a>
+<ul>
+<li><a href="#adding-a-column-converter">Adding a Column converter</a></li>
+</ul></li>
+<li><a href="#final-comments">Final Comments</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Postgres Enums and Anorm</h1>
+          
+
+        
+
+
+
+
+<p>Types are a wonderful thing in programming languages.  It&rsquo;s the main reason
+I&rsquo;m using Scala.  Having the compiler do a proof that at least part of my
+program is correct is a huge advantage over a dynamically typed language.</p>
+
+<p>Databases can also make use of types &ndash; with similar advantages.  In my current
+project we&rsquo;ve been
+receiving data from a database that does not use types or other constraints
+that are the hallmark of modern database design. What a mess!  Tables with
+invalid values, or columns that are never null but nulls are nevertheless allowed,
+or a column that allows nulls but represents them as either the empty string or a
+string with one space in it rather than good &lsquo;ole <code>null</code>.</p>
+
+<p>This blog post considers how to marry enumerations in a Postgres database
+with a Scala program via the Anorm database access library.</p>
+
+<blockquote>
+<p>Spoiler:  This is not what I actually implemented.  After you read
+  this, be sure to read the <a href="../postgres-enums-and-anorm-pt2/">follow-up</a></p>
+</blockquote>
+
+<h2 id="defining-enumerations">Defining Enumerations</h2>
+
+<p>Let&rsquo;s start with defining enumerations.  The following SQL does it in
+Postgres:</p>
+
+<p><strong>Aside:</strong> You&rsquo;ll note a couple of oddities in the SQL.  They&rsquo;re vestiages of
+the project I&rsquo;m working on.  <code>_oat</code> is the database schema I use most frequently.  <code>std_note_category</code> and <code>oat_sort_order</code> are actual enums from my current project.</p>
+
+<pre><code class="language-sql">CREATE TYPE _oat.std_note_category AS ENUM
+   ('Auto',
+    'Advisor',
+    'CourseEntry');
+
+CREATE TYPE _oat.oat_sort_order AS ENUM
+   ('ASC',
+    'DESC');
+</code></pre>
+
+<p>We can create a quick test table with</p>
+
+<pre><code class="language-sql">CREATE TABLE _oat.test_enum (
+    id               SERIAL,
+    note_category     _oat.std_note_category not null,
+    sort_order        _oat.oat_sort_order
+);
+</code></pre>
+
+<p>Note that one of columns is nullable, the other is not.</p>
+
+<p>The database enumeration is mirrored by two Scala enumerations.  The first
+one uses names that match the values in the database.  The second one
+uses more descriptive names.</p>
+
+<pre><code class="language-scala">object NoteCategory extends Enumeration {
+    type NoteCategory = Value
+
+    val Auto, Advisor, CourseEntry = Value
+}
+
+object SortOrder extends Enumeration {
+    type SortOrder = Value
+
+    val Ascending = Value(&quot;ASC&quot;)
+    val Descending = Value(&quot;DESC&quot;)
+}
+</code></pre>
+
+<h2 id="first-attempt-casting-in-the-queries">First Attempt:  casting in the queries</h2>
+
+<p>We can covert back and forth between the Scala enumerations and the
+database enumerations, but it&rsquo;s painful.  Works like this:</p>
+
+<pre><code class="language-scala">db.withConnection { implicit conn =&gt;
+
+    // Delete everything from the table
+    SQL&quot;&quot;&quot;truncate _oat.test_enum&quot;&quot;&quot;.execute()
+
+    // Insert one of each
+    val sql = SQL&quot;&quot;&quot;insert into _oat.test_enum 
+            (note_category, sort_order) VALUES  
+                (${NoteCategory.Advisor.toString}::_oat.std_note_category,
+                 ${SortOrder.Ascending.toString}::_oat.oat_sort_order
+                ) RETURNING id&quot;&quot;&quot;
+    val id = sql.as(anorm.SqlParser.scalar[Long].singleOpt) 
+
+    // Read them back and verify
+    val r = SQL&quot;&quot;&quot;select * 
+                    from _oat.test_enum 
+                    where id = ${id}&quot;&quot;&quot;.apply().head
+    val (nc, so) = (r[String](&quot;note_category&quot;), 
+                    r[Option[String]](&quot;sort_order&quot;))
+    assert(NoteCategory.withName(nc) == NoteCategory.Advisor)
+    assert(SortOrder.withName(so.get) == SortOrder.Ascending)
+}
+</code></pre>
+
+<p>The objections to this code include:</p>
+
+<ol>
+<li>The call to <code>toString</code> in lines 9 and 10.</li>
+<li>The explicit casts required in those same lines.</li>
+<li>Reading the values back again as strings in line 18 and 19.</li>
+<li>Explicitly converting the strings to enums in lines 20 and 21.</li>
+</ol>
+
+<p>Obviously, we want to do better.</p>
+
+<p>But before we dive into improving, a couple of things to note:</p>
+
+<ul>
+<li><code>withName</code> (lines 20, 21) converts a string like &ldquo;Auto&rdquo; into the corresponding enumeration value.</li>
+<li>In line 19 we use <code>Option[String]</code> because the column is nullable.</li>
+</ul>
+
+<h2 id="second-attempt-using-tostatement-and-a-column-converter">Second Attempt:  Using ToStatement and a Column converter</h2>
+
+<p>Anorm uses implicit functions to assist in converting to and from SQL
+statements.  We&rsquo;ll start with the <code>ToStatement</code>, which allows us to embed
+Scala enumerations in queries easily.  We need a couple of functions in
+each Scala enumeration we write, so put <code>createEnumToStatement</code> in a new superclass
+and then change the enumerations to extend that class:</p>
+
+<pre><code class="language-scala">class DbEnum extends Enumeration {
+    protected def createEnumToStatement[E]() = new ToStatement[E] {
+        def set(s: java.sql.PreparedStatement, index: Int, aValue: E): Unit = {
+            s.setObject(index, aValue.toString, java.sql.Types.OTHER)   
+        }   
+    }
+}
+
+object NoteCategory extends DbEnum {   // Extend DbEnum instead of Enumeration
+    ...		// same as before
+
+    implicit val noteCategoryToStatement = createEnumToStatement[NoteCategory]()
+}
+</code></pre>
+
+<p>Line 12 is the important one.  When you <code>import NoteCategory._</code> to bring the enum values into
+scope, this implicit is also brought into scope and used in the SQL statement to interpolate
+a <code>NoteCategory</code> value into the SQL.  The function&rsquo;s name
+doesn&rsquo;t matter.  You&rsquo;ll need a similar line for the other enum, of course.</p>
+
+<p>Line 12 is what allows us to drop the casts and the explicit calls to <code>toString</code> in the
+insertion SQL, above.  Replace it with the following:</p>
+
+<pre><code class="language-scala">    val sql = SQL&quot;&quot;&quot;insert into _oat.test_enum (note_category, sort_order) 
+            VALUES  (${NoteCategory.Advisor}, ${SortOrder.Ascending}) RETURNING id&quot;&quot;&quot;
+</code></pre>
+
+<p><code>createEnumToStatement</code> creates a new object that sets the appropriate value in a JDBC
+prepared statement.  If you look at the JavaDoc for <code>java.sql.PreparedStatement</code> you&rsquo;ll see
+many <code>set</code> statements:  <code>setInt</code>, <code>setBoolean</code>, <code>setTime</code>, etc.  Unfortunately, <code>setEnum</code> is
+not one of them.</p>
+
+<p>The <code>setObject</code> method is interesting.  It includes an extra parameter that allows you to
+specify the type of the value.  As you can see in line 4, we use it to pass the enumeration
+as a string but with the type of <code>java.sql.Types.OTHER</code>.  Postgres uses that as a clue to
+consult the type of the column to do the right thing.</p>
+
+<h3 id="adding-a-column-converter">Adding a Column converter</h3>
+
+<p>The last step is to automatically convert a Postgres enum read from the database into
+a Scala enum.  This is done with a <code>Column</code> converter.  Its use parallels that of <code>createEnumToStatement</code>:</p>
+
+<pre><code class="language-scala">class DbEnum extends Enumeration {
+    protected def enumToType[E](convert: String =&gt; E)(implicit m: Manifest[E]): Column[E] = Column {
+        (value, meta) =&gt;
+            val MetaDataItem(qualified, nullable, clazz) = meta
+
+            try { 
+                val s = value.asInstanceOf[String]
+                eitherToError(Right(convert(s))): MayErr[SqlRequestError, E]
+            } catch {
+              case e: Exception =&gt; 
+                eitherToError(Left(TypeDoesNotMatch(&quot;Cannot convert &quot; + value + &quot;:&quot; + 
+                    value.asInstanceOf[AnyRef].getClass + &quot; to &quot; + 
+                    m.runtimeClass.getSimpleName + &quot;for column &quot; + 
+                    qualified)))
+           }
+    }
+    // createEnumToStatement, as before
+}
+
+object NoteCategory extends DbEnum {
+	// define enum values and use createEnumToStatement, as before
+
+    implicit val rowToNoteCategory = enumToType[NoteCategory](NoteCategory.withName)
+}
+</code></pre>
+
+<p>Some explanatory comments:</p>
+
+<ol>
+<li><code>enumToType</code> is again parameterized by the type of the enum.</li>
+<li>In line 2 it consumes a function that converts a string (the value read from the database)
+into a value of type E (the enum).  For most enumerations this is simply the <code>withName</code> function
+that we get for free when defining the enum.  And that is, indeed, what&rsquo;s passed in line 23.</li>
+<li>Things can go wrong in two ways:  we might get an unexpected value from the database that
+can&rsquo;t be converted by <code>withName</code> (probably indicating that your Postgres enum and Scala enum are
+out of synch) and, if things are really borked, we might not even get a string from the database.
+Either of these are caught and turned into an error in lines 11-14.</li>
+<li>If the column should never have a null value, you can wrap <code>enumToType</code> in line 23 with
+<code>Column.nonNull(enumToType...)</code>.  This will throw the familiar &ldquo;Unexpected nullable&rdquo; error if
+a null value is found.  If nulls are expected, then read the value as an <code>Option[SortOrder]</code>, for example.</li>
+</ol>
+
+<h2 id="final-comments">Final Comments</h2>
+
+<p>The <a href="http://bwbecker.github.io/downloads/code/postgres_enums.scala">test program</a> is
+self-contained except for the first
+import line.  That&rsquo;s what provides some support code to make the database connection.  I&rsquo;ll
+write that up soon.</p>
+
+<p>The other imports are</p>
+
+<pre><code class="language-scala">import anorm._
+import org.postgresql.util.PGobject
+import anorm.MayErr._
+import java.sql.Connection
+</code></pre>
+
+<p>That&rsquo;s it!  Enjoy!</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="/posts/anorm-without-play/" title="Using Anorm without Play"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1518113180"></script>
+    <script src="/js/jquery.sticky.js?1518113180"></script>
+    <script src="/js/featherlight.min.js?1518113180"></script>
+    <script src="/js/html5shiv-printshiv.min.js?1518113180"></script>
+    <script src="/js/highlight.pack.js?1518113180"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom.71422.js?1518113180"></script>
+    <script src="/js/learn.js?1518113180"></script>
+    <script src="/js/hugo-learn.js?1518113180"></script>
+
+    <link href="/mermaid/mermaid.css?1518113180" type="text/css" rel="stylesheet" />
+    <script src="/mermaid/mermaid.js?1518113180"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

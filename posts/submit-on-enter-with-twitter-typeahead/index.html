@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.36" />
+    <meta name="description" content="Hard-won solutions to Scala &#43; Play problems">
+<meta name="author" content="Byron Weber Becker">
+
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+<link rel="icon" href="/images/favicon.png" type="image/x-icon" />
+
+    <title>Twitter Typeahead :: Hard-Won Scala &#43; Play</title>
+    
+    
+    <link href="/css/nucleus.css?1518113180" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?1518113180" rel="stylesheet">
+    <link href="/css/hybrid.css?1518113180" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1518113180" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1518113180" rel="stylesheet">
+    <link href="/css/auto-complete.css?1518113180" rel="stylesheet">
+    <link href="/css/theme.css?1518113180" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1518113180" rel="stylesheet">
+    
+
+    <script src="/js/jquery-2.x.min.js?1518113180"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/posts/submit-on-enter-with-twitter-typeahead/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <p style="font-family: Tahoma; font-weight: bold; font-size:16pt;">Hard-Won<br>Scala + Play</p>
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fa fa-search"></i></label>
+    <input data-search-input id="search-by" type="text" placeholder="Search...">
+    <span data-search-clear=""><i class="fa fa-close"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1518113180"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1518113180"></script>
+<script type="text/javascript">
+    
+        var baseurl = '\/';
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1518113180"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/posts/" title="Posts" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/posts/">
+          Posts
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" class="dd-item ">
+        <a href="/posts/silhouette&#43;cas/">
+        Silhouette&#43;CAS
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/submit-on-enter-with-twitter-typeahead/" title="Twitter Typeahead" class="dd-item active">
+        <a href="/posts/submit-on-enter-with-twitter-typeahead/">
+        Twitter Typeahead
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/painful-ide-switch/" title="Painful Ide Switch" class="dd-item ">
+        <a href="/posts/painful-ide-switch/">
+        Painful Ide Switch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-and-anorm-pt2/" title="Postgres Enums and Anorm, Part 2" class="dd-item ">
+        <a href="/posts/postgres-enums-and-anorm-pt2/">
+        Postgres Enums and Anorm, Part 2
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/anorm-without-play/" title="Using Anorm without Play" class="dd-item ">
+        <a href="/posts/anorm-without-play/">
+        Using Anorm without Play
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-anorm/" title="Postgres Enums and Anorm" class="dd-item ">
+        <a href="/posts/postgres-enums-anorm/">
+        Postgres Enums and Anorm
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Built with <a href="https://github.com/matcornic/hugo-theme-learn"><i class="fa fa-heart"></i></a> from <a href="http://getgrav.org">Grav</a> and <a href="http://gohugo.io/">Hugo</a></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Hard-Won Intro</a> > <a href='/posts/'>Posts</a> > Twitter Typeahead
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Twitter Typeahead</h1>
+          
+
+        
+
+
+<p>Twitter&rsquo;s <a href="https://twitter.github.io/typeahead.js/">Typeahead widget</a> adds suggestions to an input
+field based on what the user has already typed.  We&rsquo;re all familiar with such widgets from
+Google searches, for example.</p>
+
+<p><img src="/images/typeahead_example.png" alt="Typeahead example" /></p>
+
+<p>I thought it would be easy to set up and get going.  Indeed, seeing first (promising) results
+went really quickly.  But then I spent the rest of the day figuring out the corner cases that
+weren&rsquo;t handled and Dr. Google didn&rsquo;t provide answers for.</p>
+
+<p><strong>Update:</strong> At some point I grew frustrated with Typeahead again and switched to
+<a href="https://github.com/devbridge/jQuery-Autocomplete">jQuery-Autocomplete</a>.</p>
+
+<p>The Typeahead use case seems to be one input field in a larger form.  It helps find the correct
+value for that field but something else in the form handles the submission.</p>
+
+<p>My use case is a different but very common one &ndash; search.  The form has a single search field
+used to search for, in my case, a person.  The search could be on one of the unique identifiers
+(a number or alphameric userid) or based on a name.  The name is where the typeahead is needed.
+Once the user has found the right person (perhaps by selecting off the typeahead list), hit
+enter and it&rsquo;s submitted.</p>
+
+<p>The hard part was getting it to play nicely with the keyboard:  Submit on enter, submit the correct
+suggestion if chosen with the arrow keys, avoid resubmitting contents the are already in the form
+from a previous submission.</p>
+
+<p>Finally, when the submission occurs it should be with the userid for uniqueness.  Each user&rsquo;s
+userid is returned from my suggestion web service along with the name.</p>
+
+<p>I think the basic issue is Typeahead&rsquo;s event model and API is incomplete.  I kept looking
+in the documentation for two things:</p>
+
+<ol>
+<li>A method to get the current suggestion</li>
+<li>An event that says &ldquo;Here&rsquo;s the suggestion that was chosen&rdquo;</li>
+</ol>
+
+<p>I found the <code>typeahead:change</code> event to be useless.  I could not figure out how it gets
+triggered.</p>
+
+<p>The <code>typeahead:select</code> and <code>typeahead:autocomplete</code> were useful for when the user hit
+tab or clicked in another field.  But not when they hit the enter key.</p>
+
+<p>My suggestions web service returns json lists such as:</p>
+
+<pre><code class="language-javascript">[
+  {  &quot;surname&quot;: &quot;Bailey&quot;, &quot;givennames&quot;: &quot;Bea&quot;, &quot;userid&quot;: &quot;bbailey&quot; },
+  {  &quot;surname&quot;: &quot;Barker&quot;, &quot;givennames&quot;: &quot;Bob&quot;, &quot;userid&quot;: &quot;babarker&quot; }
+]
+</code></pre>
+
+<p>The HTML is</p>
+
+<pre><code class="language-html">&lt;div&gt;&lt;form action=&quot;/search&quot; method=&quot;GET&quot; id=&quot;search&quot;&gt;
+	&lt;input type=&quot;text&quot; id=&quot;searchTerm&quot; name=&quot;searchTerm&quot; value=&quot;&quot; 
+		class=&quot;search form-control typeahead&quot; autocomplete=&quot;off&quot;&gt;
+	&lt;/form&gt;&lt;/div&gt;
+</code></pre>
+
+<p>Here&rsquo;s the Javascript I finally came up with:</p>
+
+<pre><code class="language-javascript">asisJS = function () {
+
+
+  var initSearchTypeahead = function () {
+
+    /*
+     * A hack to keep track of the currently selected userid
+     * when the cursor keys are moved.
+     */
+    var currentQuery = &quot;&quot;;
+
+    /*
+     * Cursor moved down the list of suggestions.  Keep track
+     * of the current suggestion in currentQuery
+     */
+    function logCursorChange(ev, suggestion) {
+      if (typeof suggestion == 'undefined' ) {
+        currentQuery = &quot;&quot;;
+      } else {
+        currentQuery = suggestion.userid;
+      }
+    }
+
+    /*
+     * User triggered a submit, either via the typeahead:submit 
+     * or autocomplete event
+     */
+    function submitSuggestion(ev, suggestion) {
+      $('#searchTerm').val(suggestion.userid);
+      $('#search').submit();    // submit the form
+    }
+
+    /*
+     * Initialize the search field with the typeahead widget
+     * The source function is hacked so it gets hits if the first
+     * character is in [A-Z] (a name).  Otherwise (eg uwid, userid, etc)
+     * it does not.
+     */
+    $('#searchTerm')
+      .typeahead(
+      {
+        minLength: 1
+      }, {
+        // Where to get the typeahead suggestions
+        source: function (query, processSync, processAsync) {
+          // If the field has contents (eg &quot;who&quot;) that will be stored
+          // in currentQuery before the user starts to type.  Don't want that.
+          currentQuery = &quot;&quot;;
+
+          if (query.charAt(0) &gt;= &quot;A&quot; &amp;&amp; query.charAt(0) &lt;= &quot;Z&quot;) {
+            // Get the autocomplete;  We don't have any synchronous
+            // suggestions.  Call the suggestion API to get 10 suggestions
+            // given the contents of the query.  The query may contain
+            // spaces, letters, and numbers -- nothing else.  Replace
+            // the spaces with _ for http transport.
+            processSync([]);
+            $.get('/api/v2/student/' + query.replace(/ /g, '_') + '/typeahead/10', 
+            	function (json) {  processAsync(json.data);  }
+            );
+          } else {
+            // Not a name; don't do the autocomplete
+            processSync([]);
+            processAsync([]);
+            currentQuery = query;
+          }
+        },
+
+        // How to display a suggestion
+        display: function (suggestion) {
+          return suggestion.surname + &quot;, &quot; + suggestion.givennames;
+        },
+
+        // Bug in Typeahead.
+        // See https://github.com/twitter/typeahead.js/issues/1232
+        limit: 20     
+
+      })
+
+       //Catch typeahead events
+      .on('typeahead:select', submitSuggestion)
+      .on('typeahead:autocomplete', submitSuggestion)
+      .on('typeahead:cursorchange', logCursorChange)
+
+      // Submit the form if the user hits &quot;enter&quot;
+      .on('keydown', function (event) {
+        if (event.which === 13) {
+          if (currentQuery === '') {
+            // Trigger the default (first) suggestion
+            $('.tt-suggestion:first-child').trigger('click');
+          } else {
+            // The suggestion they chose with arrow keys
+            $('#searchTerm').val(currentQuery);
+            $('#search').submit();    // submit the form
+          }
+        }
+      })
+    ;
+
+    // Select any text already in the textbox (eg from error handling)
+    // when the page loads.
+    $('#searchTerm').focus().select();
+  };
+
+
+  return {
+    initSearchTypeahead: initSearchTypeahead
+  };
+}
+();
+</code></pre>
+
+<p>There you have it;  hope it&rsquo;s been helpful!</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="/posts/painful-ide-switch/" title="Painful Ide Switch" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1518113180"></script>
+    <script src="/js/jquery.sticky.js?1518113180"></script>
+    <script src="/js/featherlight.min.js?1518113180"></script>
+    <script src="/js/html5shiv-printshiv.min.js?1518113180"></script>
+    <script src="/js/highlight.pack.js?1518113180"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom.71422.js?1518113180"></script>
+    <script src="/js/learn.js?1518113180"></script>
+    <script src="/js/hugo-learn.js?1518113180"></script>
+
+    <link href="/mermaid/mermaid.css?1518113180" type="text/css" rel="stylesheet" />
+    <script src="/mermaid/mermaid.js?1518113180"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

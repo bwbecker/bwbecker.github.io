@@ -1,66 +1,87 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/08/29/pain-with-twitter-typeahead-widget/</loc>
-    <lastmod>2015-08-29T05:40:03-04:00</lastmod>
+    <loc>http://example.org/posts/silhouette&#43;cas/</loc>
+    <lastmod>2018-02-08T08:56:48-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/05/28/painful-switch-from-eclipse-to-idea-ide/</loc>
-    <lastmod>2015-05-28T07:49:06-04:00</lastmod>
+    <loc>http://example.org/posts/submit-on-enter-with-twitter-typeahead/</loc>
+    <lastmod>2015-08-29T09:00:45-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/05/06/postgres-enums-and-anorm/</loc>
-    <lastmod>2015-05-06T09:19:12-04:00</lastmod>
+    <loc>http://example.org/posts/painful-ide-switch/</loc>
+    <lastmod>2015-05-28T09:00:22-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/05/05/accessing-anorm-without-play/</loc>
-    <lastmod>2015-05-05T10:40:25-04:00</lastmod>
+    <loc>http://example.org/posts/postgres-enums-and-anorm-pt2/</loc>
+    <lastmod>2015-05-06T08:59:49-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/</loc>
-    <lastmod>2015-05-05T08:24:47-04:00</lastmod>
+    <loc>http://example.org/posts/anorm-without-play/</loc>
+    <lastmod>2015-05-05T09:05:05-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/2015/05/05/hard-won-introduction/</loc>
-    <lastmod>2015-05-05T08:14:41-04:00</lastmod>
+    <loc>http://example.org/posts/postgres-enums-anorm/</loc>
+    <lastmod>2015-05-05T08:59:49-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/archives/</loc>
+    <loc>http://example.org/</loc>
+    <lastmod>2015-05-05T08:59:36-05:00</lastmod>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/</loc>
+    <loc>http://example.org/categories/anorm/</loc>
+    <lastmod>2015-05-05T09:05:05-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/postgres/</loc>
+    <loc>http://example.org/categories/</loc>
+    <lastmod>2015-05-05T09:05:05-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/anorm/</loc>
+    <loc>http://example.org/categories/enumeration/</loc>
+    <lastmod>2015-05-05T08:59:49-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/scala/</loc>
+    <loc>http://example.org/categories/play/</loc>
+    <lastmod>2015-05-05T08:59:49-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/play/</loc>
+    <loc>http://example.org/categories/postgres/</loc>
+    <lastmod>2015-05-05T09:05:05-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/enumeration/</loc>
+    <loc>http://example.org/posts/</loc>
+    <lastmod>2018-02-08T08:56:48-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/json/</loc>
+    <loc>http://example.org/categories/scala/</loc>
+    <lastmod>2015-05-05T09:05:05-05:00</lastmod>
+    <priority>0</priority>
   </url>
+  
   <url>
-    <loc>http://bwbecker.github.io/blog/categories/ide/</loc>
+    <loc>http://example.org/tags/</loc>
+    <priority>0</priority>
   </url>
-  <url>
-    <loc>http://bwbecker.github.io/blog/categories/eclipse/</loc>
-  </url>
-  <url>
-    <loc>http://bwbecker.github.io/blog/categories/intellij/</loc>
-  </url>
-  <url>
-    <loc>http://bwbecker.github.io/blog/categories/typeahead/</loc>
-  </url>
-  <url>
-    <loc>http://bwbecker.github.io/blog/categories/javascript/</loc>
-  </url>
+  
 </urlset>

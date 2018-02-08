@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
 <link rel="icon" href="/images/favicon.png" type="image/x-icon" />
 
-    <title>Hard-Won Intro :: Hard-Won Scala &#43; Play</title>
+    <title>Silhouette&#43;CAS :: Hard-Won Scala &#43; Play</title>
     
     
     <link href="/css/nucleus.css?1518113180" rel="stylesheet">
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/">
+  <body class="" data-url="/posts/silhouette&#43;cas/">
     <nav id="sidebar" class="">
 
 
@@ -73,7 +73,7 @@
   
     
     <li data-nav-id="/posts/" title="Posts" class="dd-item 
-        
+        parent
         
         
         ">
@@ -97,7 +97,7 @@
  
   
     
-      <li data-nav-id="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" class="dd-item ">
+      <li data-nav-id="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" class="dd-item active">
         <a href="/posts/silhouette&#43;cas/">
         Silhouette&#43;CAS
         
@@ -234,23 +234,196 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Hard-Won Intro</a> > <a href='/posts/'>Posts</a> > Silhouette+CAS
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#getting-going">Getting Going</a></li>
+<li><a href="#the-build-file">The Build File</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#config-parameters">Config Parameters</a></li>
+<li><a href="#tackling-silhouettemodule">Tackling SilhouetteModule</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
 
         
         <div id="body-inner">
           
+            <h1>Silhouette&#43;CAS</h1>
+          
 
         
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fa fa-bars"></i> navigation</a>
-</span>
 
- 
-<p>I&rsquo;m doing a lot of development in Scala + Play these days.  I often come up against a problem with a &ldquo;hard won&rdquo; solution.  It might be a fundamental misunderstanding on my part, something I just haven&rsquo;t run into before, or where Googling isn&rsquo;t as helpful as it often is.  Regardless, the solution came at some pain to myself.  To help make that hard won solution less painful, I&rsquo;m posting here to remind me and to help others.</p>
 
-<p>I hope you find it useful.</p>
+
+<p>I&rsquo;ve been using the excellent <a href="https://www.silhouette.rocks/docs">Silhouette</a> authentication
+library for my Play! project.  When I first started using it there was no support for
+<a href="https://www.apereo.org/projects/cas">CAS</a>.  I rolled my own support.</p>
+
+<p>Silhouette now supports
+CAS much more directly, but none of the seed projects show it integrated in.  Part of the
+difficulty of including it in a seed project is that there aren&rsquo;t any public social providers
+such as Facebook or Google to demonstrate it.</p>
+
+<p>So here&rsquo;s what I did to get it working with our institution&rsquo;s CAS server, starting with the
+<a href="https://github.com/mohiva/play-silhouette-seed">Silhouette Seed Template</a>.</p>
+
+<h2 id="getting-going">Getting Going</h2>
+
+<ol>
+<li>Clone the seed project:  <code>git clone https://github.com/mohiva/play-silhouette-seed.git play-siloutte-cas-seed</code>.<br /></li>
+<li>Note the instructions in the seed project&rsquo;s tutorial to update the code to run locally:
+
+<ul>
+<li>In the <code>application.conf</code> file, set <code>play.mailer.mock = true</code> (this was already true for me).</li>
+<li>In the <code>SignUpController</code> at about line 95 set <code>activated = true</code>.  If you&rsquo;re using CAS, the <code>User</code> class
+will likely be modified to eliminate this field.</li>
+</ul></li>
+<li>Make a quick and dirty CAS icon by duplicating and editing one of the existing icons in <code>public/images/providers/</code>.  The project will display this icon.  Clicking it will redirect to CAS.  Name your new icon <code>cas.png</code>.</li>
+</ol>
+
+<h2 id="the-build-file">The Build File</h2>
+
+<p>Add the library dependency for play-silhouette-cas to <code>build.sbt</code>:  <code>&quot;com.mohiva&quot; %% &quot;play-silhouette-cas&quot; % &quot;5.0.0&quot;,</code>.  Change the name of the project and any other personal preferences.</p>
+
+<p>At one point in the protocol CAS demands that the connection to your server be over https.  So add the following:</p>
+
+<pre><code>javaOptions ++= Seq(
+  &quot;-Dhttp.port=9000&quot;,
+  &quot;-Dhttps.port=9443&quot;
+  )
+</code></pre>
+
+<h2 id="logging">Logging</h2>
+
+<p>I found enabling the logging to be a very helpful step in debugging the interactions with our CAS server.
+I copied the default <a href="https://www.playframework.com/documentation/2.6.x/SettingsLogger"><code>logback.xml</code></a> and
+added <code>&lt;logger name=&quot;com.mohiva.play.silhouette&quot; level=&quot;DEBUG&quot; /&gt;</code>.</p>
+
+<h2 id="config-parameters">Config Parameters</h2>
+
+<p>Add something similar to this to <code>silhouette.conf</code>:</p>
+
+<pre><code>  # CAS provideer
+  cas.casURL=&quot;https://cas.uwaterloo.ca/cas&quot;
+  cas.redirectURL=&quot;https://localhost:9443/authenticate/cas&quot;
+  cas.protocol=&quot;CAS10&quot;
+</code></pre>
+
+<p>The default protocol is CAS30.  Our institution is apparently using CAS10; it took some trial and error and
+looking at logs to figure that out.  Also pay attention to the <code>casURL</code>.  Yours could very well be different.</p>
+
+<h2 id="tackling-silhouettemodule">Tackling SilhouetteModule</h2>
+
+<p><code>SilhouetteModule</code> is where all the heavy lifting takes place to integrate CAS into the seed project.</p>
+
+<p>Add <code>import com.mohiva.play.silhouette.impl.providers.CasProvider</code>.</p>
+
+<p>In <code>provideSocialProviderRegistry</code> add <code>casProvider: CasProvider</code> as a parameter and pass it to the
+<code>SocialProviderRegistry</code> constructor.</p>
+
+<p>Add a <code>CasProvider</code> provider for Guice:</p>
+
+<pre><code class="language-scala">  /**
+   * Provides the CAS provider.
+   *
+   */
+  @Provides
+  def provideCasProvider(
+    httpLayer: HTTPLayer,
+    configuration: Configuration
+  ): CasProvider = {
+    import net.ceedubs.ficus.readers.EnumerationReader._
+
+    val settings = configuration.underlying.as[CasSettings](&quot;silhouette.cas&quot;)
+    val client = new CasClient(settings)
+    new CasProvider(httpLayer, settings, client)
+  }
+</code></pre>
+
+<p>Add a provision for a CAS <code>AuthInfoRepository</code> by adjusting the <code>provideAuthInfoRepository</code> definition:</p>
+
+<pre><code class="language-scala">  def provideAuthInfoRepository(
+    passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo],
+    oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
+    oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
+    openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo],
+    casInfoDAO: DelegableAuthInfoDAO[CasInfo]): AuthInfoRepository = {
+
+    new DelegableAuthInfoRepository(passwordInfoDAO, oauth1InfoDAO, oauth2InfoDAO, openIDInfoDAO, casInfoDAO)
+  }
+</code></pre>
+
+<p>Add a binding in the <code>configure</code> method:</p>
+
+<pre><code class="language-scala">    bind[DelegableAuthInfoDAO[CasInfo]].toInstance(new InMemoryAuthInfoDAO[CasInfo])
+</code></pre>
+
+<p>At this point <code>sbt ~run</code> should successfully compile and run the program.  Pointing a browser at
+<a href="localhost:9000">localhost:9000</a> should display the signin page that includes your CAS icon.  Clicking
+that icon should redirect you to the CAS server.  Log in and get redirected back to the authenticate
+controller.  It finishes the authentication procedure and then redirects you to the site&rsquo;s home page.</p>
+
+<p>Our CAS server only returns the userid, which isn&rsquo;t displayed on the home page.  Add the following to
+<code>home.scala.html</code> to display the userid.</p>
+
+<pre><code>&lt;div class=&quot;row&quot;&gt;
+    &lt;p class=&quot;col-md-6&quot;&gt;&lt;strong&gt;userid:&lt;/strong&gt;&lt;/p&gt;&lt;p class=&quot;col-md-6&quot;&gt;@user.loginInfo.providerKey&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         
@@ -282,8 +455,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -297,6 +468,7 @@
             
             
                 
+                    
                     
                 
                 
@@ -314,21 +486,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -389,6 +548,22 @@
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -399,8 +574,10 @@
 
 
         
+            <a class="nav nav-prev" href="/posts/" title="Posts"> <i class="fa fa-chevron-left"></i></a>
         
-            <a class="nav nav-next" href="/posts/" title="Posts" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+            <a class="nav nav-next" href="/posts/submit-on-enter-with-twitter-typeahead/" title="Twitter Typeahead" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
         
     </div>
 

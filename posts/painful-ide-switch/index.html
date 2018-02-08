@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
 <link rel="icon" href="/images/favicon.png" type="image/x-icon" />
 
-    <title>Hard-Won Intro :: Hard-Won Scala &#43; Play</title>
+    <title>Painful Ide Switch :: Hard-Won Scala &#43; Play</title>
     
     
     <link href="/css/nucleus.css?1518113180" rel="stylesheet">
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/">
+  <body class="" data-url="/posts/painful-ide-switch/">
     <nav id="sidebar" class="">
 
 
@@ -73,7 +73,7 @@
   
     
     <li data-nav-id="/posts/" title="Posts" class="dd-item 
-        
+        parent
         
         
         ">
@@ -135,7 +135,7 @@
  
   
     
-      <li data-nav-id="/posts/painful-ide-switch/" title="Painful Ide Switch" class="dd-item ">
+      <li data-nav-id="/posts/painful-ide-switch/" title="Painful Ide Switch" class="dd-item active">
         <a href="/posts/painful-ide-switch/">
         Painful Ide Switch
         
@@ -234,23 +234,145 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Hard-Won Intro</a> > <a href='/posts/'>Posts</a> > Painful Ide Switch
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#idea-installation">IDEA Installation</a></li>
+<li><a href="#experience">Experience</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
 
         
         <div id="body-inner">
           
+            <h1>Painful Ide Switch</h1>
+          
 
         
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fa fa-bars"></i> navigation</a>
-</span>
 
- 
-<p>I&rsquo;m doing a lot of development in Scala + Play these days.  I often come up against a problem with a &ldquo;hard won&rdquo; solution.  It might be a fundamental misunderstanding on my part, something I just haven&rsquo;t run into before, or where Googling isn&rsquo;t as helpful as it often is.  Regardless, the solution came at some pain to myself.  To help make that hard won solution less painful, I&rsquo;m posting here to remind me and to help others.</p>
 
-<p>I hope you find it useful.</p>
+
+<p>I&rsquo;ve been using Eclipse for my Play! + Scala development, but frustration reached the tipping point and I decided to give <a href="https://www.jetbrains.com/idea/">IDEA</a> a try.  It had been highly recommended by fellow developers at a Scala Meetup (now defunct, sadly).  The conversion process has been painful, with some hard-won lessons to report.</p>
+
+<p>So, what drove me around the bend with Eclipse?  One more bout with it reporting
+many false positive compilation errors with no easy way to reset things that I could find.  SBT would give a completely clean compile;  Eclipse would report dozens of errors spread over many, many files.  That, and I can be a sucker for new toys.</p>
+
+<h2 id="idea-installation">IDEA Installation</h2>
+
+<p>These comments are based on IDEA version 14.1.3 and the Scala plugin 1.5.1 back in May, 2015.</p>
+
+<p>The IDEA installation was painful.  Here&rsquo;s what I learned:</p>
+
+<ol>
+<li><p><strong>Out of date documentation</strong>:  There is <em>a lot</em> of documentation on the IDEA web site; much of it woefully
+out of date.  For example, a Google search for &ldquo;intellij idea scala play&rdquo; landed me at a
+features page touting <a href="https://www.jetbrains.com/idea/features/scala.html">IDEA 13</a>
+with links to a
+<a href="https://confluence.jetbrains.com/display/IntelliJIDEA/Scala">tutorial</a> posted
+in 2013.  As the comments at the bottom of the page atest, it&rsquo;s not applicable.</p>
+
+<p>If I had landed at this <a href="https://www.jetbrains.com/idea/features/play_framework.html">features overview</a> instead, things would have been somewhat
+less rocky.</p></li>
+
+<li><p><strong>Ultimate Edition required</strong>:  Working with Play! requires the Ultimate Edition.  This
+tidbit is well hidden.  This <a href="https://www.jetbrains.com/idea/features/play_framework.html">Play! plugin page</a>,
+for example, touts support for templates, routes files, etc.  No where does it mention that the
+Community Edition won&rsquo;t work and the download button at the bottom offers both versions, implying
+that either will work.  The linked
+<a href="https://confluence.jetbrains.com/display/IntelliJIDEA/Play+Framework+2.0">tutorial</a> doesn&rsquo;t mention it either.</p>
+
+<p>It <em>is</em> found on the <a href="http://blog.jetbrains.com/scala/2014/09/17/scala-and-play-2-0-plugin-for-intellij-idea-14-eap-is-out/">Scala plugin blog</a>.  It&rsquo;s the last sentence of a paragraph that you need to scroll to see.</p></li>
+
+<li><p><strong>Run Play2 App</strong> may or may not appear in the context menu, as the documentation
+on the <a href="https://www.playframework.com/documentation/2.4.x/IDE">Play! website</a> and the
+<a href="https://confluence.jetbrains.com/download/attachments/49455798/PlayRunningApp.png?version=1&amp;modificationDate=1397129336000">IntelliJ tutorial</a>
+indicate.  I needed to create a run configuration on my own, first:</p>
+
+<ol>
+<li>Go to &ldquo;Run &ndash;&gt; Edit Configurations&hellip;&rdquo;</li>
+<li>Hit the &ldquo;+&rdquo; sign and choose &ldquo;Play2 App&rdquo; from the drop-down.</li>
+<li>Give it a name and accept the defaults.</li>
+</ol>
+
+<p>I still don&rsquo;t find it in the context menu, but it does appear in the Run
+menu.</p></li>
+</ol>
+
+<p>In retrospect, these are little things.  At the time, however, they were confusing and
+chewed up time I could have better spent elsewhere.</p>
+
+<h2 id="experience">Experience</h2>
+
+<p>I&rsquo;m still getting used to IDEA, but here are some initial observations:</p>
+
+<ol>
+<li>IDEA has a number of code-smell filters (&ldquo;inspections&rdquo;).  Some of them led to code
+improvements.  I wish the hover that describes the problem wasn&rsquo;t so sensitive.  It
+disappears quite easily.</li>
+<li>There are some false positive type errors &ndash; the same thing that drove me around the
+bend with Eclipse.  So far they are isolated cases rather than the whole system
+going bonkers as sometimes happened in Eclipse.</li>
+<li>I like nested helper functions.  The Eclipse Outline view shows them;  IDEA&rsquo;s
+Structure view (the closest equivalent) does not.</li>
+<li>IDEA detects as soon as I use something that hasn&rsquo;t been imported.  So far it&rsquo;s made
+good guesses when it offers to automatically add the import.</li>
+<li>It seems snappier for editing, but slower than SBT for compiling.
+<br /></li>
+</ol>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         
@@ -282,8 +404,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -298,21 +418,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -346,6 +453,26 @@
             
                 
                     
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
                 
                 
 
@@ -399,8 +526,10 @@
 
 
         
+            <a class="nav nav-prev" href="/posts/submit-on-enter-with-twitter-typeahead/" title="Twitter Typeahead"> <i class="fa fa-chevron-left"></i></a>
         
-            <a class="nav nav-next" href="/posts/" title="Posts" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+            <a class="nav nav-next" href="/posts/postgres-enums-and-anorm-pt2/" title="Postgres Enums and Anorm, Part 2" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
         
     </div>
 

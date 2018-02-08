@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.36" />
+    <meta name="description" content="Hard-won solutions to Scala &#43; Play problems">
+<meta name="author" content="Byron Weber Becker">
+
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+<link rel="icon" href="/images/favicon.png" type="image/x-icon" />
+
+    <title>Postgres Enums and Anorm, Part 2 :: Hard-Won Scala &#43; Play</title>
+    
+    
+    <link href="/css/nucleus.css?1518113180" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?1518113180" rel="stylesheet">
+    <link href="/css/hybrid.css?1518113180" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1518113180" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1518113180" rel="stylesheet">
+    <link href="/css/auto-complete.css?1518113180" rel="stylesheet">
+    <link href="/css/theme.css?1518113180" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1518113180" rel="stylesheet">
+    
+
+    <script src="/js/jquery-2.x.min.js?1518113180"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/posts/postgres-enums-and-anorm-pt2/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <p style="font-family: Tahoma; font-weight: bold; font-size:16pt;">Hard-Won<br>Scala + Play</p>
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fa fa-search"></i></label>
+    <input data-search-input id="search-by" type="text" placeholder="Search...">
+    <span data-search-clear=""><i class="fa fa-close"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1518113180"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1518113180"></script>
+<script type="text/javascript">
+    
+        var baseurl = '\/';
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1518113180"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/posts/" title="Posts" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/posts/">
+          Posts
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/silhouette&#43;cas/" title="Silhouette&#43;CAS" class="dd-item ">
+        <a href="/posts/silhouette&#43;cas/">
+        Silhouette&#43;CAS
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/submit-on-enter-with-twitter-typeahead/" title="Twitter Typeahead" class="dd-item ">
+        <a href="/posts/submit-on-enter-with-twitter-typeahead/">
+        Twitter Typeahead
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/painful-ide-switch/" title="Painful Ide Switch" class="dd-item ">
+        <a href="/posts/painful-ide-switch/">
+        Painful Ide Switch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-and-anorm-pt2/" title="Postgres Enums and Anorm, Part 2" class="dd-item active">
+        <a href="/posts/postgres-enums-and-anorm-pt2/">
+        Postgres Enums and Anorm, Part 2
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/anorm-without-play/" title="Using Anorm without Play" class="dd-item ">
+        <a href="/posts/anorm-without-play/">
+        Using Anorm without Play
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/posts/postgres-enums-anorm/" title="Postgres Enums and Anorm" class="dd-item ">
+        <a href="/posts/postgres-enums-anorm/">
+        Postgres Enums and Anorm
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Built with <a href="https://github.com/matcornic/hugo-theme-learn"><i class="fa fa-heart"></i></a> from <a href="http://getgrav.org">Grav</a> and <a href="http://gohugo.io/">Hugo</a></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Hard-Won Intro</a> > <a href='/posts/'>Posts</a> > Postgres Enums and Anorm, Part 2
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Postgres Enums and Anorm, Part 2</h1>
+          
+
+        
+
+
+<p>I went to implement my enumerations discoveries as chronicalled in
+<a href="../postgres-enums-anorm/">Postgres Enums and Anorm</a>
+and realized anew something that had niggled away in the back of my brain:  I&rsquo;m working
+with data from a legacy database and most of the enumerations are indecipherable.  Many of
+the enumerations are like this:</p>
+
+<pre><code class="language-sql">CREATE TYPE _quest.quest_instruction_mode AS ENUM
+   ('P',
+    'CO');
+</code></pre>
+
+<p>where &lsquo;P&rsquo; stands for (as far as we can tell!) &ldquo;in-Person&rdquo; and &lsquo;CO&rsquo; stands for &ldquo;Course-Online&rdquo;.</p>
+
+<p>So naturally, I&rsquo;d like an intelligible Scala enumeration such as</p>
+
+<pre><code class="language-scala">object InstructionMode extends DbEnum {
+  type InstructionMode = Value
+
+  val InPerson = Value(&quot;P&quot;)
+  val Online = Value(&quot;CO&quot;)
+}
+</code></pre>
+
+<p>But here&rsquo;s the rub:  <code>println(InstructionMode.Online)</code> still prints the indecipherable <code>CO</code>.</p>
+
+<p>The goals I&rsquo;m pursuing are:</p>
+
+<ul>
+<li>Easy interoperability between Posgres enumerations and Scala enumerations.</li>
+<li>Printing meaningful values from my program rather than the obscure codes kept in the database.</li>
+<li>Minimal code duplication or bloat.</li>
+</ul>
+
+<p>Here&rsquo;s my solution.  As in my <a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">previous post</a>,
+I&rsquo;m adding a common superclass to my enumerations that itself extends Scala&rsquo;s <code>Enumeration</code> class.  The difference
+this time is that I&rsquo;ve defined an abstract type, <code>myType</code>, and an abstract list that will contain the codes
+actually used in the database.  This allows me to do almost all of the work in the superclass, provided I
+have one function: <code>unapply</code> takes a string (the one stored in the database) and returns a value from the
+Scala enumeration.</p>
+
+<p>A typical Scala enumeration now looks like this:</p>
+
+<pre><code class="language-scala">object InstructionMode extends DbEnum {
+  type InstructionMode = Value
+
+  val InPerson, Online = Value
+
+  protected type myType = Value
+  protected val dbValues = Array(&quot;P&quot;, &quot;CO&quot;)
+  protected def unapply(s: String): myType = InstructionMode(dbValues.indexOf(s))
+}
+</code></pre>
+
+<p>Notes:</p>
+
+<ul>
+<li>Line 1 extends <code>DbEnum</code> rather than <code>Enumeration</code>.</li>
+<li>Thanks to line 4, printing the enumeration&rsquo;s values will give a meaningful result,
+either &ldquo;InPerson&rdquo; or &ldquo;Online&rdquo;.</li>
+<li>Line 6 defines the abstract type we&rsquo;ll need in <code>DbEnum</code>.  This line is the same in every enum but
+is needed because <code>Value</code> is different for every enum.</li>
+<li>Line 7 defines the values actually contained in the database.  They need to be in
+the same order as the values specified in line 4.</li>
+<li>Line 8 is the <code>unapply</code> function.  In all of my cases, it&rsquo;s exactly as shown here
+except for the obvious substitution for <code>InstructionMode</code>.</li>
+</ul>
+
+<p>The requirement that the order of values in lines 4 and 7 match is a problem, in my mind.
+There&rsquo;s no question that this can be a source of bugs.  But I&rsquo;m out of ideas for how to
+improve it.  If you have some, please comment!  I&rsquo;d also appreciate insight into how
+the name <code>InPerson</code> is captured and put into a map in the <code>Enumeration</code> class.  There&rsquo;s
+still something going on there that I don&rsquo;t understand but I&rsquo;d like to!</p>
+
+<p>Finally, the code for <code>DbEnum</code> is:</p>
+
+<pre><code class="language-scala">abstract class DbEnum extends Enumeration {
+
+  protected type myType &lt;: Enumeration#Value
+  protected val dbValues: Array[String]
+  protected def unapply(s: String): myType
+
+  /**
+   * Create an implicit to help with converting this Scala enum into the equivalent
+   * Postgres enum.
+   */
+  implicit val toStatement = new ToStatement[myType] {
+    def set(s: java.sql.PreparedStatement, index: Int, aValue: myType): Unit = {
+      s.setObject(index, dbValues(aValue.id), java.sql.Types.OTHER)
+    }
+  }
+
+  /**
+   * Convert a database enumeration to a Scala enumeration.
+   * @param convert A conversion function from a string (the value received from the database) to E (the Scala enum).
+   */
+  implicit def enumToType(implicit m: Manifest[myType]): Column[myType] = Column {
+    (value, meta) =&gt;
+      val MetaDataItem(qualified, nullable, clazz) = meta
+
+      try {
+        val s = value.asInstanceOf[String]
+        eitherToError(Right(unapply(s))): MayErr[SqlRequestError, myType]
+      } catch {
+        case e: Exception =&gt;
+          eitherToError(Left(TypeDoesNotMatch(&quot;Cannot convert &quot; + value + &quot;:&quot; +
+            value.asInstanceOf[AnyRef].getClass + &quot; to &quot; +
+            m.runtimeClass.getSimpleName + &quot; for column &quot; +
+            qualified)))
+      }
+  }
+
+  /**
+   * Create a json Reads to read instances of this enumeration from JSON.
+   */
+  implicit val reads = new Reads[myType] {
+    def reads(json: JsValue): JsResult[myType] = json match {
+      case s: JsString =&gt;
+        val enum = unapply(s.value)
+        JsSuccess(enum)
+      case x =&gt; JsError(s&quot;Expected a string; got $x.&quot;)
+    }
+  }
+}
+</code></pre>
+
+<ul>
+<li>Lines 3-5 define the abstract members that need to be defined in each
+of the individual enumerations.</li>
+<li>The definitions of <code>toStatement</code> and <code>enumToType</code> are very much the same
+as in the <a href="http://bwbecker.github.io/blog/2015/05/05/postgres-enums-and-anorm/">previous post</a>
+except that with the new definition of <code>myType</code> we have all the information to move everything
+into <code>DbEnum</code>.</li>
+<li>This implementation contains a bonus:  Lines 40-47 contain a function that reads
+the enumeration from a json blob.  That&rsquo;s also central to how I&rsquo;m dealing with my database
+and will, no doubt, be the subject of a future post.</li>
+</ul>
+
+<p>That&rsquo;s it!  Enjoy!</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="/posts/painful-ide-switch/" title="Painful Ide Switch"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="/posts/anorm-without-play/" title="Using Anorm without Play" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.min.js?1518113180"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1518113180"></script>
+    <script src="/js/jquery.sticky.js?1518113180"></script>
+    <script src="/js/featherlight.min.js?1518113180"></script>
+    <script src="/js/html5shiv-printshiv.min.js?1518113180"></script>
+    <script src="/js/highlight.pack.js?1518113180"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom.71422.js?1518113180"></script>
+    <script src="/js/learn.js?1518113180"></script>
+    <script src="/js/hugo-learn.js?1518113180"></script>
+
+    <link href="/mermaid/mermaid.css?1518113180" type="text/css" rel="stylesheet" />
+    <script src="/mermaid/mermaid.js?1518113180"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hard-Won Intro on Hard-Won Scala &#43; Play</title>
+    <title>Hard-Won Scala &#43; Play</title>
     <link>http://example.org/</link>
-    <description>Recent content in Hard-Won Intro on Hard-Won Scala &#43; Play</description>
+    <description>Recent content on Hard-Won Scala &#43; Play</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 May 2015 08:59:36 -0500</lastBuildDate>
+    <lastBuildDate>Thu, 08 Feb 2018 08:56:48 -0500</lastBuildDate>
     
 	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
     
@@ -71,6 +71,15 @@ It has a couple of features:
       <guid>http://example.org/posts/postgres-enums-anorm/</guid>
       <description>Types are a wonderful thing in programming languages. It&amp;rsquo;s the main reason I&amp;rsquo;m using Scala. Having the compiler do a proof that at least part of my program is correct is a huge advantage over a dynamically typed language.
 Databases can also make use of types &amp;ndash; with similar advantages. In my current project we&amp;rsquo;ve been receiving data from a database that does not use types or other constraints that are the hallmark of modern database design.</description>
+    </item>
+    
+    <item>
+      <title>Hard-Won Intro</title>
+      <link>http://example.org/posts/hard_won_intro/</link>
+      <pubDate>Tue, 05 May 2015 08:59:36 -0500</pubDate>
+      
+      <guid>http://example.org/posts/hard_won_intro/</guid>
+      <description>I&amp;rsquo;m doing a lot of development in Scala + Play these days. I often come up against a problem with a &amp;ldquo;hard won&amp;rdquo; solution. It might be a fundamental misunderstanding on my part, something I just haven&amp;rsquo;t run into before, or where Googling isn&amp;rsquo;t as helpful as it often is. Regardless, the solution came at some pain to myself. To help make that hard won solution less painful, I&amp;rsquo;m posting here to remind me and to help others.</description>
     </item>
     
   </channel>
